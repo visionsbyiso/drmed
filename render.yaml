@@ -5,10 +5,6 @@ services:
     rootDir: backend-node
     buildCommand: npm install
     startCommand: node server.js
-    disk:
-      name: drmed-results
-      mountPath: /var/data
-      sizeGB: 5
     envVars:
       - key: NODE_ENV
         value: production
@@ -19,9 +15,9 @@ services:
       - key: SHEET_NAME
         value: Sheet1
       - key: RESULT_STORAGE
-        value: local
-      - key: LOCAL_RESULTS_DIR
-        value: /var/data/results
+        value: drive
+      - key: DRIVE_FOLDER_ID
+        sync: false
       - key: ALLOWED_ORIGIN
         sync: false
       - key: REQUIRE_PORTAL_CONSENT

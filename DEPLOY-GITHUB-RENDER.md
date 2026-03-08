@@ -3,7 +3,7 @@
 This guide is for:
 - Frontend: GitHub Pages (`drmed.visionsbyiso.com`)
 - Backend API: Render (`api.drmed.visionsbyiso.com`)
-- Storage mode: `RESULT_STORAGE=local` (staff uploads to backend disk)
+- Storage mode: `RESULT_STORAGE=drive` (staff uploads to private Google Drive folder)
 
 ## Why split hosting
 
@@ -48,7 +48,6 @@ drmed.visionsbyiso.com
    - Root Directory: `backend-node`
    - Build Command: `npm install`
    - Start Command: `node server.js`
-4. Add a **persistent disk** mounted to `/var/data`.
 5. Add custom domain in Render: `api.drmed.visionsbyiso.com`.
 6. In DNS provider, create CNAME:
    - Host: `api.drmed`
@@ -67,8 +66,8 @@ ALLOWED_ORIGIN=https://drmed.visionsbyiso.com
 SHEET_ID=<YOUR_SHEET_ID>
 SHEET_NAME=Sheet1
 
-RESULT_STORAGE=local
-LOCAL_RESULTS_DIR=/var/data/results
+RESULT_STORAGE=drive
+DRIVE_FOLDER_ID=<YOUR_PRIVATE_DRIVE_FOLDER_ID>
 
 REQUIRE_PORTAL_CONSENT=true
 REQUIRE_PORTAL_CAPTCHA=true
