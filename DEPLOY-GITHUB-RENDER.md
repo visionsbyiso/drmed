@@ -5,6 +5,9 @@ This guide is for:
 - Backend API: Render (`api.drmed.visionsbyiso.com`)
 - Storage mode: `RESULT_STORAGE=drive` (staff uploads to private Google Drive folder)
 
+Important:
+- If you see `Service Accounts do not have storage quota`, switch to `DRIVE_AUTH_MODE=oauth_user`.
+
 ## Why split hosting
 
 GitHub Pages only hosts static files and does not run Node.js backend code.  
@@ -68,6 +71,11 @@ SHEET_NAME=Sheet1
 
 RESULT_STORAGE=drive
 DRIVE_FOLDER_ID=<YOUR_PRIVATE_DRIVE_FOLDER_ID>
+DRIVE_AUTH_MODE=oauth_user
+GOOGLE_OAUTH_CLIENT_ID=<YOUR_OAUTH_CLIENT_ID>
+GOOGLE_OAUTH_CLIENT_SECRET=<YOUR_OAUTH_CLIENT_SECRET>
+GOOGLE_OAUTH_REDIRECT_URI=http://localhost:8085/oauth2/callback
+GOOGLE_OAUTH_REFRESH_TOKEN=<YOUR_OAUTH_REFRESH_TOKEN>
 
 REQUIRE_PORTAL_CONSENT=true
 REQUIRE_PORTAL_CAPTCHA=true
@@ -93,6 +101,10 @@ STAFF_AUDIT_LOG_FILE=./logs/staff-audit.ndjson
 GOOGLE_SERVICE_ACCOUNT_JSON=<ONE_LINE_JSON_CONTENT>
 ```
 
+Notes:
+- Keep `GOOGLE_SERVICE_ACCOUNT_JSON` for Sheets access.
+- Use OAuth user creds above for Drive (`DRIVE_AUTH_MODE=oauth_user`).
+
 ## 5) Frontend API + CAPTCHA keys
 
 In:
@@ -114,6 +126,13 @@ Set (before portal script):
 2. Share the Sheet with your service account email as **Editor**.
 3. Ensure Sheet columns are A-I (expected by backend).
 4. Ensure tab `ConsentLogs` exists.
+
+OAuth user for Drive (one-time):
+1. Create OAuth Web Client in Google Cloud.
+2. Set redirect URI `http://localhost:8085/oauth2/callback`.
+3. In `/Users/coleen/Desktop/DRMED Website/backend-node`, run:
+   - `npm run oauth:drive-token` with `GOOGLE_OAUTH_CLIENT_ID` + `GOOGLE_OAUTH_CLIENT_SECRET`.
+4. Save returned `GOOGLE_OAUTH_REFRESH_TOKEN` into Render env vars.
 
 ## 7) Go-live checks
 
@@ -144,6 +163,16 @@ Change only:
 - `window.__DRMED_API_BASE__='https://api.drmed.ph'`
 - Turnstile allowed hostnames/keys for production domain
 - Production sheet/service-account secrets
+
+## 9) Optional free keepalive (reduces cold starts)
+
+This repo includes:
+- `/Users/coleen/Desktop/DRMED Website/.github/workflows/render-keepalive.yml`
+
+Add GitHub Actions secret:
+- `RENDER_HEALTHCHECK_URL=https://api.drmed.visionsbyiso.com/healthz`
+
+It pings every 10 minutes.
 
 ---
 

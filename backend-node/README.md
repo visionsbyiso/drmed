@@ -53,6 +53,7 @@ Copy `.env.example` to `.env` and set:
 - `SHEET_NAME`
 - `RESULT_STORAGE` (`drive` or `local`)
 - `DRIVE_FOLDER_ID` (required only for `RESULT_STORAGE=drive`)
+- `DRIVE_AUTH_MODE` (`service_account` or `oauth_user`) when using `RESULT_STORAGE=drive`
 - `LOCAL_RESULTS_DIR` (used for `RESULT_STORAGE=local`)
 - `ALLOWED_ORIGIN`
 - `PORTAL_ACCESS_TOKEN_SECRET`
@@ -61,6 +62,7 @@ Copy `.env.example` to `.env` and set:
 - `STAFF_SESSION_TTL_SECONDS` (default `43200` = 12 hours)
 - `MAX_STAFF_BULK_ITEMS` (optional; max files per bulk request)
 - `GOOGLE_APPLICATION_CREDENTIALS` (or `GOOGLE_SERVICE_ACCOUNT_JSON`)
+- `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` (required when `DRIVE_AUTH_MODE=oauth_user`)
 
 Production baseline files:
 - `.env.production.example` (strict production env template)
@@ -80,6 +82,8 @@ Security flags:
 - `RESULT_STORAGE=drive`:
   - PDFs are uploaded to Google Drive.
   - `DRIVE_FOLDER_ID` must be configured and writable by service account.
+  - `DRIVE_AUTH_MODE=service_account` uses service-account auth for Drive.
+  - `DRIVE_AUTH_MODE=oauth_user` uses OAuth refresh token for Drive uploads/downloads (recommended when service account upload quota is blocked).
 
 - `RESULT_STORAGE=local`:
   - PDFs are uploaded directly to your backend server folder (`LOCAL_RESULTS_DIR`).
@@ -93,6 +97,20 @@ cd "/Users/coleen/Desktop/DRMED Website/backend-node"
 npm install
 npm start
 ```
+
+## OAuth Drive token helper
+
+If using `DRIVE_AUTH_MODE=oauth_user`, generate refresh token:
+
+```bash
+cd "/Users/coleen/Desktop/DRMED Website/backend-node"
+GOOGLE_OAUTH_CLIENT_ID="..." \
+GOOGLE_OAUTH_CLIENT_SECRET="..." \
+GOOGLE_OAUTH_REDIRECT_URI="http://localhost:8085/oauth2/callback" \
+npm run oauth:drive-token
+```
+
+Then set returned `GOOGLE_OAUTH_REFRESH_TOKEN` in backend env vars.
 
 ## Patient endpoints
 

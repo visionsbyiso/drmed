@@ -12,3 +12,4 @@ backend-node/.env.*
 backend-node/*service-account*.json
 backend-node/drmed-*.json
 backend-node/client_secret*.json
+drmed-*.json

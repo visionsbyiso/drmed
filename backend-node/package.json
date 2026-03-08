@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "oauth:drive-token": "node scripts/generate-drive-refresh-token.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

@@ -18,6 +18,16 @@ services:
         value: drive
       - key: DRIVE_FOLDER_ID
         sync: false
+      - key: DRIVE_AUTH_MODE
+        value: oauth_user
+      - key: GOOGLE_OAUTH_CLIENT_ID
+        sync: false
+      - key: GOOGLE_OAUTH_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_OAUTH_REDIRECT_URI
+        value: http://localhost:8085/oauth2/callback
+      - key: GOOGLE_OAUTH_REFRESH_TOKEN
+        sync: false
       - key: ALLOWED_ORIGIN
         sync: false
       - key: REQUIRE_PORTAL_CONSENT

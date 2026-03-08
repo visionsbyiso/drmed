@@ -28,7 +28,14 @@ const SHEET_NAME = process.env.SHEET_NAME || 'Sheet1';
 const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '';
 const RESULT_STORAGE = String(process.env.RESULT_STORAGE || 'drive').trim().toLowerCase();
 const USE_LOCAL_STORAGE = RESULT_STORAGE === 'local' || RESULT_STORAGE === 'filesystem';
+const RAW_DRIVE_AUTH_MODE = String(process.env.DRIVE_AUTH_MODE || 'service_account').trim().toLowerCase();
+const DRIVE_AUTH_MODE = ['oauth', 'oauth_user', 'user'].includes(RAW_DRIVE_AUTH_MODE) ? 'oauth_user' : 'service_account';
+const USE_DRIVE_OAUTH_USER = !USE_LOCAL_STORAGE && DRIVE_AUTH_MODE === 'oauth_user';
 const LOCAL_RESULTS_DIR = process.env.LOCAL_RESULTS_DIR || path.join(__dirname, 'uploaded-results');
+const GOOGLE_OAUTH_CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID || '';
+const GOOGLE_OAUTH_CLIENT_SECRET = process.env.GOOGLE_OAUTH_CLIENT_SECRET || '';
+const GOOGLE_OAUTH_REDIRECT_URI = process.env.GOOGLE_OAUTH_REDIRECT_URI || '';
+const GOOGLE_OAUTH_REFRESH_TOKEN = process.env.GOOGLE_OAUTH_REFRESH_TOKEN || '';
 const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT || '20mb';
 const STAFF_GATE_USERS = parseStaffGateUsers(process.env.STAFF_GATE_USERS_JSON || '');
 const ENABLE_STAFF_SESSION_GATE = STAFF_GATE_USERS.size > 0;
@@ -76,6 +83,16 @@ if (!USE_LOCAL_STORAGE && !DRIVE_FOLDER_ID) {
 }
 if (USE_LOCAL_STORAGE) {
   console.warn('[INFO] RESULT_STORAGE=local. PDFs will be stored in LOCAL_RESULTS_DIR:', LOCAL_RESULTS_DIR);
+} else {
+  console.warn('[INFO] RESULT_STORAGE=drive. Drive auth mode:', DRIVE_AUTH_MODE);
+}
+if (!['', 'service_account', 'oauth', 'oauth_user', 'user'].includes(RAW_DRIVE_AUTH_MODE)) {
+  console.warn('[WARN] Unknown DRIVE_AUTH_MODE value. Falling back to service_account mode.');
+}
+if (USE_DRIVE_OAUTH_USER) {
+  if (!GOOGLE_OAUTH_CLIENT_ID || !GOOGLE_OAUTH_CLIENT_SECRET || !GOOGLE_OAUTH_REFRESH_TOKEN) {
+    console.warn('[WARN] DRIVE_AUTH_MODE=oauth_user requires GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, and GOOGLE_OAUTH_REFRESH_TOKEN.');
+  }
 }
 
 if (REQUIRE_PORTAL_CAPTCHA && !TURNSTILE_SECRET_KEY) {
@@ -118,6 +135,10 @@ if (STRICT_SECURITY_MODE) {
   if (!CONSENT_LOG_TO_SHEETS) strictErrors.push('CONSENT_LOG_TO_SHEETS must be true in strict security mode.');
   if (!ALLOWED_ORIGINS.length || ALLOW_ALL_ORIGINS) strictErrors.push('ALLOWED_ORIGIN must be explicitly restricted in strict security mode.');
   if (HAS_LOCAL_ORIGIN) strictErrors.push('ALLOWED_ORIGIN must not include localhost/127.0.0.1 in strict security mode.');
+  if (!USE_LOCAL_STORAGE && !DRIVE_FOLDER_ID) strictErrors.push('DRIVE_FOLDER_ID is required when RESULT_STORAGE=drive in strict security mode.');
+  if (USE_DRIVE_OAUTH_USER && !GOOGLE_OAUTH_CLIENT_ID) strictErrors.push('GOOGLE_OAUTH_CLIENT_ID is required when DRIVE_AUTH_MODE=oauth_user.');
+  if (USE_DRIVE_OAUTH_USER && !GOOGLE_OAUTH_CLIENT_SECRET) strictErrors.push('GOOGLE_OAUTH_CLIENT_SECRET is required when DRIVE_AUTH_MODE=oauth_user.');
+  if (USE_DRIVE_OAUTH_USER && !GOOGLE_OAUTH_REFRESH_TOKEN) strictErrors.push('GOOGLE_OAUTH_REFRESH_TOKEN is required when DRIVE_AUTH_MODE=oauth_user.');
   if (USE_LOCAL_STORAGE && !path.isAbsolute(LOCAL_RESULTS_DIR)) strictErrors.push('LOCAL_RESULTS_DIR must be an absolute path in strict security mode.');
 
   if (strictErrors.length) {
@@ -125,12 +146,12 @@ if (STRICT_SECURITY_MODE) {
   }
 }
 
-const BASE_SCOPES = [
+const SHEETS_BASE_SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets.readonly'
 ];
 
-function getGoogleScopes() {
-  const scopes = new Set(BASE_SCOPES);
+function getSheetsScopes() {
+  const scopes = new Set(SHEETS_BASE_SCOPES);
 
   if (ENABLE_CONSENT_AUDIT_LOG && CONSENT_LOG_TO_SHEETS) {
     scopes.add('https://www.googleapis.com/auth/spreadsheets');
@@ -138,10 +159,15 @@ function getGoogleScopes() {
 
   if (ENABLE_STAFF_UPLOAD) {
     scopes.add('https://www.googleapis.com/auth/spreadsheets');
-    if (!USE_LOCAL_STORAGE) scopes.add('https://www.googleapis.com/auth/drive');
   }
 
-  if (!USE_LOCAL_STORAGE) scopes.add('https://www.googleapis.com/auth/drive.readonly');
+  return [...scopes];
+}
+
+function getDriveScopesForServiceAccount() {
+  const scopes = new Set();
+  if (ENABLE_STAFF_UPLOAD) scopes.add('https://www.googleapis.com/auth/drive');
+  scopes.add('https://www.googleapis.com/auth/drive.readonly');
 
   return [...scopes];
 }
@@ -151,12 +177,30 @@ let clientsPromise;
 function getGoogleClients() {
   if (!clientsPromise) {
     clientsPromise = (async () => {
-      const credentials = getCredentialsFromEnv();
-      const auth = new google.auth.GoogleAuth({ credentials, scopes: getGoogleScopes() });
-      const authClient = await auth.getClient();
+      const sheetAuth = new google.auth.GoogleAuth({
+        credentials: getCredentialsFromEnv(),
+        scopes: getSheetsScopes()
+      });
+      const sheetAuthClient = await sheetAuth.getClient();
+
+      let driveClient = null;
+      if (!USE_LOCAL_STORAGE) {
+        if (USE_DRIVE_OAUTH_USER) {
+          const oauthClient = getDriveOAuthClientFromEnv();
+          driveClient = google.drive({ version: 'v3', auth: oauthClient });
+        } else {
+          const driveAuth = new google.auth.GoogleAuth({
+            credentials: getCredentialsFromEnv(),
+            scopes: getDriveScopesForServiceAccount()
+          });
+          const driveAuthClient = await driveAuth.getClient();
+          driveClient = google.drive({ version: 'v3', auth: driveAuthClient });
+        }
+      }
+
       return {
-        sheets: google.sheets({ version: 'v4', auth: authClient }),
-        drive: USE_LOCAL_STORAGE ? null : google.drive({ version: 'v3', auth: authClient })
+        sheets: google.sheets({ version: 'v4', auth: sheetAuthClient }),
+        drive: driveClient
       };
     })();
   }
@@ -179,6 +223,25 @@ function getCredentialsFromEnv() {
   } catch (err) {
     throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON is not valid JSON');
   }
+}
+
+function getDriveOAuthClientFromEnv() {
+  const clientId = String(GOOGLE_OAUTH_CLIENT_ID || '').trim();
+  const clientSecret = String(GOOGLE_OAUTH_CLIENT_SECRET || '').trim();
+  const refreshToken = String(GOOGLE_OAUTH_REFRESH_TOKEN || '').trim();
+  const redirectUri = String(GOOGLE_OAUTH_REDIRECT_URI || '').trim();
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    throw new Error('Missing OAuth env for Drive. Required: GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, GOOGLE_OAUTH_REFRESH_TOKEN');
+  }
+
+  const oauthClient = new google.auth.OAuth2(
+    clientId,
+    clientSecret,
+    redirectUri || undefined
+  );
+  oauthClient.setCredentials({ refresh_token: refreshToken });
+  return oauthClient;
 }
 
 function normalizeControl(value) {
