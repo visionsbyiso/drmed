@@ -5,6 +5,8 @@
 backend-node/node_modules/
 backend-node/.env
 backend-node/.env.*
+!backend-node/.env.example
+!backend-node/.env.production.example
 
 # Google credential keys (never commit)
 backend-node/*service-account*.json
