@@ -1,0 +1,4 @@
+Activity ID,Primary Lawful Basis,Secondary Basis (if any),Why This Basis Applies,Consent Required?,Withdrawal Method
+PA-001,Contract/Service necessity,Legitimate interest,Needed to verify identity before releasing medical results through the portal,Yes,"Submit request via DPO email [TO FILL] or clinic hotline 0916 604 3208 / 8355 3517"
+PA-002,Contract/Service necessity,Legal obligation,Needed to provide requested laboratory result to the patient or authorized representative,No (for core service),"Submit request via DPO email [TO FILL] or clinic hotline 0916 604 3208 / 8355 3517"
+PA-003,Legal obligation,Legitimate interest,Needed to maintain compliance evidence and security audit trail under RA 10173 controls,No,N/A

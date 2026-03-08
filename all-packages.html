@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en-PH">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Detailed diagnostic package list of DRMed Clinic and Laboratory with inclusions and prices." />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <link rel="canonical" href="https://drmed.ph/all-packages.html" />
+  <meta name="theme-color" content="#06aef1" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="All Packages | DRMed Clinic and Laboratory" />
+  <meta property="og:description" content="View detailed DRMed diagnostic package inclusions and prices." />
+  <meta property="og:url" content="https://drmed.ph/all-packages.html" />
+  <meta property="og:image" content="https://drmed.ph/DRMED%20LOGO.png" />
+  <title>Detailed Packages | DRMed Clinic and Laboratory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:       #284570;
+      --steel:      #4682b4;
+      --cyan:       #06aef1;
+      --cyan-light: #7fbeff;
+      --white:      #ffffff;
+      --bg:         #f0f6fc;
+      --bg-mid:     #e3eef9;
+      --border:     rgba(70,130,180,0.18);
+      --text:       #1a2537;
+      --text-soft:  #6b7280;
+      --shadow-sm:  0 1px 8px rgba(40,69,112,0.08);
+      --shadow-md:  0 8px 28px rgba(40,69,112,0.14);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Public Sans', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      overflow-x: hidden;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding: 0.7rem 1.5rem;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-logo { display: inline-flex; align-items: center; text-decoration: none; }
+    .nav-logo img { height: 52px; width: auto; max-width: 230px; object-fit: contain; display: block; }
+    .nav-logo-fallback {
+      display: none;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: var(--navy);
+    }
+    .nav-logo-fallback span { color: var(--cyan); }
+
+    .nav-actions { display: flex; gap: 0.55rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn-nav {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border: 1.5px solid var(--steel);
+      color: var(--navy);
+      background: transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-nav:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .btn-nav.primary { background: var(--cyan); color: var(--white); border-color: var(--cyan); }
+    .btn-nav.primary:hover { background: #0598d4; border-color: #0598d4; }
+
+    .hero {
+      background:
+        radial-gradient(circle at 14% 22%, rgba(6,174,241,0.2), transparent 46%),
+        radial-gradient(circle at 90% 22%, rgba(127,190,255,0.18), transparent 40%),
+        linear-gradient(135deg, #f2f9ff 0%, #e9f5ff 52%, #d8edff 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 2.9rem 1.5rem 2.2rem;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-bottom: 1rem;
+    }
+    .eyebrow-line { width: 1.3rem; height: 2px; background: var(--cyan); }
+    .eyebrow-text {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .hero h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(1.75rem, 3.5vw, 2.65rem);
+      line-height: 1.15;
+      color: var(--navy);
+      margin-bottom: 0.65rem;
+      font-weight: 800;
+    }
+    .hero h1 span { color: var(--cyan); }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0 auto;
+      color: #4f6686;
+      line-height: 1.7;
+      font-size: 0.9rem;
+    }
+
+    .section {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 2.1rem 1.5rem 2.6rem;
+    }
+
+    .block {
+      background: var(--navy);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow-md);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .block-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      color: var(--white);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .package-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .package-card {
+      background: rgba(255,255,255,0.04);
+      padding: 1.05rem 0.95rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .pkg-name {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.25;
+      margin-bottom: 0.36rem;
+    }
+
+    .pkg-desc {
+      font-size: 0.76rem;
+      color: rgba(255,255,255,0.58);
+      line-height: 1.55;
+      margin-bottom: 0.8rem;
+    }
+
+    .pkg-price-wrap {
+      padding-bottom: 0.7rem;
+      margin-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .pkg-original {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.32);
+      text-decoration: line-through;
+      margin-bottom: 0.14rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+    }
+
+    .pkg-price {
+      font-family: 'Montserrat', sans-serif;
+      color: var(--cyan);
+      font-size: 1.45rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .pkg-price small {
+      font-size: 0.58rem;
+      color: rgba(255,255,255,0.42);
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+
+    .pkg-list { list-style: none; margin-bottom: 0.9rem; }
+    .pkg-list li {
+      position: relative;
+      font-size: 0.74rem;
+      color: rgba(255,255,255,0.76);
+      line-height: 1.45;
+      padding: 0.23rem 0 0.23rem 0.92rem;
+    }
+    .pkg-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      top: 0.2rem;
+      color: var(--cyan);
+      font-weight: 800;
+    }
+
+    .pkg-cta {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1.5px solid rgba(6,174,241,0.46);
+      color: var(--cyan);
+      padding: 0.6rem 0.75rem;
+      transition: all 0.2s;
+    }
+    .pkg-cta:hover { background: var(--cyan); color: var(--white); border-color: var(--cyan); }
+
+    .package-note {
+      margin-top: 0.95rem;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.6;
+      text-align: center;
+    }
+    .package-note a { color: var(--cyan-light); text-decoration: none; }
+    .package-note a:hover { text-decoration: underline; }
+
+    footer {
+      background: #0d1f3c;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding: 1.4rem 1.5rem;
+      text-align: center;
+    }
+    .footer-logo img { height: 40px; width: auto; object-fit: contain; opacity: 0.92; }
+    .footer-copy { margin-top: 0.5rem; color: rgba(255,255,255,0.32); font-size: 0.68rem; }
+
+    @media (max-width: 1080px) {
+      .package-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      nav { padding: 0.65rem 1rem; }
+      .nav-logo img { height: 44px; max-width: 190px; }
+      .section, .hero-inner { padding-left: 1rem; padding-right: 1rem; }
+      .block { padding: 1rem; }
+      .package-grid { grid-template-columns: 1fr; }
+      .hero p { font-size: 0.84rem; }
+      .btn-nav { flex: 1; }
+      .nav-actions { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-logo" href="index.html" aria-label="DRMed Home">
+      <img src="DRMED LOGO.png" alt="DRMed Healthcare Inc." onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline-flex';" />
+      <span id="logoFallback" class="nav-logo-fallback"><span>DR</span>Med</span>
+    </a>
+    <div class="nav-actions">
+      <a class="btn-nav" href="index.html#packages">Homepage Summary</a>
+      <a class="btn-nav primary" href="index.html#contact">Book / Inquire</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">
+        <div class="eyebrow-line"></div>
+        <div class="eyebrow-text">DRMed Clinic and Laboratory</div>
+        <div class="eyebrow-line"></div>
+      </div>
+      <h1>Detailed Diagnostic <span>Packages</span></h1>
+      <p>Full package list with detailed inclusions and prices. Please confirm latest rates and availability before booking.</p>
+    </div>
+  </section>
+
+  <main class="section">
+    <section class="block">
+      <h2 class="block-title">Basic and Routine Packages</h2>
+      <div class="package-grid">
+        <article class="package-card">
+          <h3 class="pkg-name">Basic Package</h3>
+          <p class="pkg-desc">Essential screening for routine checkups.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱1,050</div>
+            <div class="pkg-price">₱950 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>Complete Blood Count (CBC)</li>
+            <li>Urinalysis</li>
+            <li>Chest X-Ray (PA)</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Routine Package</h3>
+          <p class="pkg-desc">Comprehensive blood work for complete assessment.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱2,498</div>
+            <div class="pkg-price">₱1,999 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>Complete Blood Count (CBC)</li>
+            <li>Fasting Blood Sugar (FBS)</li>
+            <li>BUN, Creatinine, Blood Uric Acid</li>
+            <li>Lipid Profile</li>
+            <li>SGPT / SGOT</li>
+            <li>Urinalysis</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Annual Physical Exam</h3>
+          <p class="pkg-desc">Complete yearly health assessment package.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱1,500</div>
+            <div class="pkg-price">₱1,199 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>Doctor's Consultation</li>
+            <li>Complete Blood Count (CBC)</li>
+            <li>Urinalysis and Stool Analysis</li>
+            <li>Chest X-Ray (PA)</li>
+            <li>ECG (12-lead)</li>
+            <li>Blood Chemistry Panel</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Diabetic Health Package</h3>
+          <p class="pkg-desc">Targeted monitoring for diabetic risk and management.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱4,134</div>
+            <div class="pkg-price">₱3,599 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>Fasting Blood Sugar / HbA1c</li>
+            <li>Lipid Profile</li>
+            <li>Kidney Function Tests</li>
+            <li>Urine Microalbumin</li>
+            <li>Doctor's Consultation</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Dengue Package</h3>
+          <p class="pkg-desc">Rapid dengue detection and confirmation panel.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱2,740</div>
+            <div class="pkg-price">₱2,215 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>CBC with Platelet Count</li>
+            <li>NS1 Antigen</li>
+            <li>Dengue IgG and IgM</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2 class="block-title">Executive Packages</h2>
+      <div class="package-grid">
+        <article class="package-card">
+          <h3 class="pkg-name">Standard Executive Package</h3>
+          <p class="pkg-desc">Essential executive screening for professionals.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-price">₱5,888 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>Consultation and Physical Exam</li>
+            <li>Urinalysis, Fecalysis, FOBT</li>
+            <li>CBC, FBS, BUN, Creatinine, BUA</li>
+            <li>Lipid Profile, SGOT/SGPT, HbA1c</li>
+            <li>Protein, Bilirubin, ALP, Electrolytes, TCa</li>
+            <li>Chest X-Ray and 12-Lead ECG</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Comprehensive Executive Package</h3>
+          <p class="pkg-desc">Full-spectrum executive health screening.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-price">₱9,588 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>All Standard Executive inclusions</li>
+            <li>Micral Test</li>
+            <li>Thyroid Panel (FT3, FT4, TSH)</li>
+            <li>Ultrasound - Whole Abdomen</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Deluxe Executive Package</h3>
+          <p class="pkg-desc">Premium screening with gender-specific inclusions.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-price">₱9,588 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>All Comprehensive Executive inclusions</li>
+            <li>Amylase, LDH, CPK/CK, Bicarbonate, Phosphorus, CEA</li>
+            <li>For males: PSA and prostate ultrasound</li>
+            <li>For females: Pap Smear and breast exam</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2 class="block-title">More Lab Test Packages</h2>
+      <div class="package-grid">
+        <article class="package-card">
+          <h3 class="pkg-name">Thyroid Function Test Package</h3>
+          <p class="pkg-desc">Thyroid hormone screening package.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱1,604</div>
+            <div class="pkg-price">₱1,099 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>TSH</li>
+            <li>FT3</li>
+            <li>FT4</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Lipid Profile Test Package</h3>
+          <p class="pkg-desc">Cardiovascular risk profile package.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱970</div>
+            <div class="pkg-price">₱699 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>Total Cholesterol</li>
+            <li>Triglycerides</li>
+            <li>HDL / LDL / VLDL</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Liver Function Test Package</h3>
+          <p class="pkg-desc">Liver enzyme and bilirubin panel.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱1,450</div>
+            <div class="pkg-price">₱999 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>SGOT / AST</li>
+            <li>SGPT / ALT</li>
+            <li>Bilirubin and ALP</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Kidney Function Test Package</h3>
+          <p class="pkg-desc">Renal markers for kidney health.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱970</div>
+            <div class="pkg-price">₱699 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>Blood Urea Nitrogen (BUN)</li>
+            <li>Creatinine</li>
+            <li>Blood Uric Acid (BUA)</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+
+        <article class="package-card">
+          <h3 class="pkg-name">Iron Deficiency Package</h3>
+          <p class="pkg-desc">Iron studies for deficiency assessment.</p>
+          <div class="pkg-price-wrap">
+            <div class="pkg-original">₱1,604</div>
+            <div class="pkg-price">₱1,099 <small>PHP</small></div>
+          </div>
+          <ul class="pkg-list">
+            <li>Serum Iron</li>
+            <li>Total Iron Binding Capacity (TIBC)</li>
+            <li>Ferritin</li>
+          </ul>
+          <a class="pkg-cta" href="index.html#contact">Book This Package</a>
+        </article>
+      </div>
+      <p class="package-note">Source reference: <a href="https://drmed.ph/collections/frontpage" target="_blank" rel="noopener noreferrer">DRMED Lab Test Packages</a>. Prices and inclusions may change without prior notice.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-logo">
+      <img src="DRMED LOGO.png" alt="DRMed Healthcare Inc." onerror="this.style.display='none';" />
+    </div>
+    <div class="footer-copy">© 2026 DRMed Healthcare Inc. · All rights reserved · Quezon City, PH</div>
+  </footer>
+</body>
+</html>

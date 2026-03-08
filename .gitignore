@@ -1,0 +1,12 @@
+.DS_Store
+*.log
+
+# Node backend artifacts
+backend-node/node_modules/
+backend-node/.env
+backend-node/.env.*
+
+# Google credential keys (never commit)
+backend-node/*service-account*.json
+backend-node/drmed-*.json
+backend-node/client_secret*.json

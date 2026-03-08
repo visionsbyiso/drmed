@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#284570">
+    <title>DRMed Healthcare Inc. | Patient Results Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary: #06aef1; --secondary: #284570; --bg-color: #f3f6f9; 
+            --card-bg: #ffffff; --text-main: #1e293b; --text-muted: #64748b; --border-light: #e2e8f0;
+        }
+
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); -webkit-font-smoothing: antialiased; }
+        h1, h2, h3 { font-family: 'Montserrat', sans-serif; margin: 0; }
+        
+        #login-screen {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle at top right, #e0f2fe 0%, var(--bg-color) 100%);
+            padding: 20px; box-sizing: border-box;
+        }
+
+        .login-box {
+            background: var(--card-bg); padding: 3rem 2.5rem; border-radius: 24px;
+            width: 100%; max-width: 420px; text-align: center;
+            box-shadow: 0 20px 40px -15px rgba(40, 69, 112, 0.15); border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        /* --- LOGO SIZED PERFECTLY --- */
+        .brand-logo { 
+            width: 100%; 
+            max-width: 220px; /* Elegant, balanced width */
+            height: auto; 
+            max-height: 80px; /* Prevents overwhelming the form */
+            object-fit: contain; 
+            margin: 0 auto 2rem auto; 
+            display: block;
+        }
+
+        .auth-title { color: var(--secondary); font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .auth-subtitle { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.4rem; }
+        .auth-message {
+            display: none; text-align: left; font-size: 0.82rem; border-radius: 10px;
+            padding: 10px 12px; margin-bottom: 1rem; border: 1px solid transparent;
+        }
+        .auth-message.error { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+        .auth-message.ok { background: #ecfdf5; color: #047857; border-color: #bbf7d0; }
+        .dash-message { margin: 0 0 1rem 0; }
+
+        .input-group { text-align: left; margin-bottom: 1.25rem; position: relative; }
+        .input-group label { display: block; font-weight: 600; font-size: 0.75rem; margin-bottom: 8px; color: var(--secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-wrapper { position: relative; }
+        .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: #94a3b8; }
+        
+        .field-input { 
+            width: 100%; height: 52px; background: #f8fafc; border: 1px solid var(--border-light); 
+            border-radius: 12px; padding: 0 16px 0 44px; font-size: 1rem; color: var(--text-main); 
+            font-family: 'Inter', sans-serif; box-sizing: border-box; transition: all 0.3s ease;
+        }
+        .field-input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(6, 174, 241, 0.1); }
+
+        .btn-submit {
+            width: 100%; height: 52px; background: var(--secondary); color: white; border: none; 
+            border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; 
+            display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(40, 69, 112, 0.2);
+        }
+        .btn-submit:hover { background: #1a2e4c; transform: translateY(-1px); }
+        .btn-submit:disabled { opacity: 0.7; cursor: wait; }
+
+        .security-badge { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 2rem; color: #64748b; font-size: 0.75rem; font-weight: 500; }
+
+        /* DASHBOARD */
+        #dashboard { display: none; min-height: 100vh; }
+        .nav-bar { background: var(--card-bg); padding: 1rem 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* --- DASHBOARD LOGO SIZED PERFECTLY --- */
+        .nav-logo { 
+            height: 45px; 
+            width: auto; 
+            max-width: 180px; 
+            object-fit: contain; 
+        }
+        
+        .btn-logout { background: #f1f5f9; color: var(--text-muted); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: background 0.2s; }
+        .btn-logout:hover { background: #e2e8f0; color: var(--secondary); }
+
+        .dashboard-container { max-width: 800px; margin: 0 auto; padding: 2.5rem 20px; }
+        .welcome-section { margin-bottom: 2rem; }
+        .welcome-text { color: var(--text-muted); font-size: 1rem; margin-bottom: 4px; }
+        .patient-name { color: var(--secondary); font-size: 1.75rem; }
+        .control-badge { display: inline-block; background: #e0f2fe; color: #0284c7; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-top: 8px; border: 1px solid #bae6fd; }
+
+        /* Dynamic Cards */
+        .result-card { 
+            background: var(--card-bg); border-radius: 20px; padding: 2rem; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border-light);
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .test-info { flex: 1; }
+        .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; margin-bottom: 12px; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .test-title { color: var(--secondary); font-size: 1.25rem; margin-bottom: 6px; }
+        .test-date { color: var(--text-muted); font-size: 0.875rem; display: flex; align-items: center; gap: 6px; }
+
+        .btn-download { 
+            padding: 14px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; 
+            display: flex; align-items: center; gap: 8px; transition: all 0.2s; 
+        }
+
+        #loader { display: none; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 640px) {
+            .result-card { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+            .btn-download { width: 100%; justify-content: center; box-sizing: border-box; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <img src="DRMED LOGO.png" alt="DRMed Healthcare Inc." class="brand-logo" onerror="this.style.display='none'">
+            <h2 class="auth-title">Patient Results Portal</h2>
+            <p class="auth-subtitle">Secure access to your laboratory reports</p>
+            <div id="auth-message" class="auth-message" role="status" aria-live="polite"></div>
+
+            <div class="input-group">
+                <label>Control Number</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h3"></path></svg>
+                    <input type="text" id="control-no" class="field-input" placeholder="e.g. 2026-0001">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Date of Birth</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <input type="date" id="bday" class="field-input" placeholder="YYYY-MM-DD">
+                </div>
+            </div>
+
+            <button class="btn-submit" id="submit-btn" onclick="validateLogin()">
+                <span id="btn-text">View Results</span>
+                <div id="loader"></div>
+            </button>
+
+            <div class="security-badge">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                Secured by Data Privacy Act of 2012
+            </div>
+        </div>
+    </div>
+
+    <main id="dashboard">
+        <div class="nav-bar">
+            <img src="DRMED LOGO.png" alt="DRMed" class="nav-logo" onerror="this.style.display='none'">
+            <button class="btn-logout" onclick="location.reload()">Secure Logout</button>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="welcome-section">
+                <div class="welcome-text">Welcome back,</div>
+                <h2 id="p-name" class="patient-name">Patient Name</h2>
+                <div class="control-badge">ID: <span id="display-control"></span></div>
+            </div>
+
+            <h3 style="color: var(--text-muted); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem;">Available Reports</h3>
+
+            <div id="dash-message" class="auth-message dash-message" role="status" aria-live="polite"></div>
+            <div id="reports-container"></div>
+            
+            <p style="text-align: center; font-size: 0.8rem; color: #94a3b8; margin-top: 3rem;">
+                If you have questions about your results, please contact your referring physician.
+            </p>
+        </div>
+    </main>
+
+    <script>
+        function setAuthMessage(message, kind = "error") {
+            const box = document.getElementById('auth-message');
+            box.className = `auth-message ${kind}`;
+            box.textContent = message;
+            box.style.display = 'block';
+        }
+
+        function clearAuthMessage() {
+            const box = document.getElementById('auth-message');
+            box.style.display = 'none';
+            box.textContent = '';
+            box.className = 'auth-message';
+        }
+
+        function setDashMessage(message, kind = "ok") {
+            const box = document.getElementById('dash-message');
+            box.className = `auth-message dash-message ${kind}`;
+            box.textContent = message;
+            box.style.display = 'block';
+        }
+
+        function clearDashMessage() {
+            const box = document.getElementById('dash-message');
+            box.style.display = 'none';
+            box.textContent = '';
+            box.className = 'auth-message dash-message';
+        }
+
+        function fmtDate(value) {
+            const d = new Date(value);
+            if (Number.isNaN(d.getTime())) return value || "N/A";
+            return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        function birthdayCandidates(value) {
+            const raw = safeText(value, "");
+            const out = [];
+            const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+            if (iso) {
+                out.push(iso[2] + iso[3] + iso[1]); // MMDDYYYY (preferred)
+                out.push(raw); // YYYY-MM-DD fallback
+                out.push(iso[1] + iso[2] + iso[3]); // YYYYMMDD fallback
+            } else if (raw) {
+                out.push(raw);
+            }
+
+            const compact = raw.match(/^(\d{2})(\d{2})(\d{4})$/);
+            if (compact) {
+                out.push(compact[3] + "-" + compact[1] + "-" + compact[2]); // YYYY-MM-DD fallback
+            }
+
+            return [...new Set(out.filter(Boolean))];
+        }
+
+        function safeText(value, fallback = "N/A") {
+            if (value === undefined || value === null) return fallback;
+            const s = String(value).trim();
+            return s ? s : fallback;
+        }
+
+        function createReportCard(report) {
+            const statusRaw = safeText(report.testStatus, "Pending");
+            const status = statusRaw.toLowerCase();
+            const isPending = status.includes('pending') || !safeText(report.pdfLink, "");
+            const pillBg = isPending ? '#fffbeb' : '#ecfdf5';
+            const pillColor = isPending ? '#d97706' : '#059669';
+            const dotColor = isPending ? '#f59e0b' : '#10b981';
+
+            const card = document.createElement('div');
+            card.className = 'result-card';
+
+            const info = document.createElement('div');
+            info.className = 'test-info';
+
+            const pill = document.createElement('div');
+            pill.className = 'status-pill';
+            pill.style.background = pillBg;
+            pill.style.color = pillColor;
+
+            const dot = document.createElement('div');
+            dot.className = 'status-dot';
+            dot.style.background = dotColor;
+            pill.appendChild(dot);
+
+            const pillText = document.createElement('span');
+            pillText.textContent = statusRaw.toUpperCase();
+            pill.appendChild(pillText);
+
+            const title = document.createElement('h3');
+            title.className = 'test-title';
+            title.textContent = safeText(report.testName, 'Laboratory Test');
+
+            const dateWrap = document.createElement('div');
+            dateWrap.className = 'test-date';
+            dateWrap.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+            const dateText = document.createElement('span');
+            dateText.textContent = `Collected: ${fmtDate(report.testDate)}`;
+            dateWrap.appendChild(dateText);
+
+            info.appendChild(pill);
+            info.appendChild(title);
+            info.appendChild(dateWrap);
+
+            const action = document.createElement('a');
+            action.className = 'btn-download';
+            if (isPending) {
+                action.href = '#';
+                action.setAttribute('aria-disabled', 'true');
+                action.style.background = '#e2e8f0';
+                action.style.color = '#64748b';
+                action.style.cursor = 'not-allowed';
+                action.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Pending';
+                action.onclick = function (e) {
+                    e.preventDefault();
+                    setDashMessage('Results are not available yet for this report.', 'ok');
+                };
+            } else {
+                action.href = safeText(report.pdfLink, '#');
+                action.target = '_blank';
+                action.rel = 'noopener noreferrer';
+                action.style.background = 'var(--primary)';
+                action.style.color = 'white';
+                action.style.boxShadow = '0 4px 12px rgba(6, 174, 241, 0.2)';
+                action.innerHTML = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>Download PDF';
+            }
+
+            card.appendChild(info);
+            card.appendChild(action);
+            return card;
+        }
+
+        async function validateLogin() {
+            const control = document.getElementById('control-no').value.trim();
+            const bday = document.getElementById('bday').value;
+            const btn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('loader');
+
+            clearAuthMessage();
+            if (!control || !bday) {
+                setAuthMessage("Please fill in both Control Number and Date of Birth.");
+                return;
+            }
+
+            btn.disabled = true; btnText.style.display = "none"; loader.style.display = "block";
+
+            // --- PASTE YOUR WORKING WEB APP URL BELOW ---
+            const scriptURL = "https://script.google.com/macros/s/AKfycbwXnHhdgQXP95cgmtfbRBPFt_6_KYaUyqpO4KVRfAAHRMF-RShS6xdqEtcczijiRAgD0g/exec"; 
+            
+            try {
+                const candidates = birthdayCandidates(bday);
+                let data = null;
+                let hadResponse = false;
+
+                for (const bdayValue of candidates) {
+                    const query = `control=${encodeURIComponent(control)}&bday=${encodeURIComponent(bdayValue)}`;
+                    try {
+                        const response = await fetch(`${scriptURL}?${query}`);
+                        if (!response.ok) continue;
+                        hadResponse = true;
+                        const result = await response.json();
+                        if (result && result.status === "success") {
+                            data = result;
+                            break;
+                        }
+                    } catch (err) {
+                        continue;
+                    }
+                }
+                
+                if (data && data.status === "success") {
+                    document.getElementById('p-name').innerText = safeText(data.name, "Patient");
+                    document.getElementById('display-control').innerText = control;
+                    clearDashMessage();
+
+                    const reportsContainer = document.getElementById('reports-container');
+                    reportsContainer.innerHTML = "";
+                    const reports = Array.isArray(data.reports) ? data.reports.slice() : [];
+                    reports.sort((a, b) => new Date(b.testDate || 0) - new Date(a.testDate || 0));
+
+                    if (!reports.length) {
+                        const empty = document.createElement('div');
+                        empty.className = 'result-card';
+                        empty.innerHTML = '<div class="test-info"><h3 class="test-title">No reports found yet</h3><div class="test-date"><span>Please check again later or contact the clinic for assistance.</span></div></div>';
+                        reportsContainer.appendChild(empty);
+                    } else {
+                        reports.forEach(report => reportsContainer.appendChild(createReportCard(report)));
+                    }
+
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                } else { 
+                    if (hadResponse) {
+                        setAuthMessage("Invalid credentials. Please verify your Control Number and Date of Birth.");
+                    } else {
+                        setAuthMessage("Connection error. Please check your internet connection and try again.");
+                    }
+                    resetBtn(btn, btnText, loader);
+                }
+            } catch (e) { 
+                setAuthMessage("Connection error. Please check your internet and try again.");
+                resetBtn(btn, btnText, loader);
+            }
+        }
+
+        function resetBtn(btn, text, loader) {
+            btn.disabled = false; text.style.display = "block"; loader.style.display = "none";
+        }
+
+        document.getElementById('control-no').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') validateLogin();
+        });
+        document.getElementById('bday').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') validateLogin();
+        });
+    </script>
+</body>
+</html>

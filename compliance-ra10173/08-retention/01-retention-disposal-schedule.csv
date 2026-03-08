@@ -1,0 +1,5 @@
+Record Type,System/Location,Minimum Retention,Maximum Retention,Disposal Method,Owner,Legal Basis/Reason
+Laboratory result PDFs,Google Drive,Proposed 5 years (pending final legal/medical confirmation),Proposed 10 years (pending final legal/medical confirmation),Secure deletion from Drive and backups per approved policy,Lab Operations + DPO,Medical/legal record obligation
+Portal consent logs,ConsentLogs sheet + backend logs,Proposed 2 years (pending final confirmation),Proposed 5 years (pending final confirmation),Secure deletion or anonymization after retention period,DPO + IT,Compliance evidence and audit traceability
+DSR request records,Compliance folder,Proposed 3 years (pending final confirmation),Proposed 5 years (pending final confirmation),Secure deletion with disposal record,DPO,Legal defense and compliance tracking
+Breach incident records,Compliance folder + DBNMS evidence,Proposed 5 years (pending final confirmation),Proposed 10 years (pending final confirmation),Secure deletion with disposal record,DPO + Management,Regulatory/legal obligation

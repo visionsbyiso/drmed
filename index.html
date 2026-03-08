@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en-PH">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DRMed Clinic and Laboratory in Quezon City providing diagnostics, specialist consultations, and secure online laboratory results access." />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <link rel="canonical" href="https://drmed.ph/" />
+  <meta name="theme-color" content="#06aef1" />
+  <meta property="og:locale" content="en_PH" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="DRMed Clinic and Laboratory" />
+  <meta property="og:title" content="DRMed Clinic and Laboratory — Quezon City" />
+  <meta property="og:description" content="Diagnostics, specialist consultations, and secure laboratory results portal for patients." />
+  <meta property="og:url" content="https://drmed.ph/" />
+  <meta property="og:image" content="https://drmed.ph/DRMED%20LOGO.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DRMed Clinic and Laboratory — Quezon City" />
+  <meta name="twitter:description" content="Diagnostics, specialist consultations, and secure laboratory results portal for patients." />
+  <meta name="twitter:image" content="https://drmed.ph/DRMED%20LOGO.png" />
+  <meta name="referrer" content="no-referrer" />
+  <title>DRMed Clinic and Laboratory — Quezon City</title>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "MedicalClinic",
+        "@id": "https://drmed.ph/#clinic",
+        "name": "DRMed Clinic & Laboratory",
+        "url": "https://drmed.ph/",
+        "telephone": [
+          "+63 916 604 3208",
+          "+63 2 8355 3517"
+        ],
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "4/F DRMED Clinic & Laboratory, Northridge Plaza, Congressional Avenue",
+          "addressLocality": "Quezon City",
+          "addressCountry": "PH"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://drmed.ph/#website",
+        "url": "https://drmed.ph/",
+        "name": "DRMed Clinic and Laboratory",
+        "publisher": {
+          "@id": "https://drmed.ph/#clinic"
+        }
+      }
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ══════════════════════════════════════════════
+       DESIGN TOKENS — exact DRMed brand
+    ══════════════════════════════════════════════ */
+    :root {
+      --navy:       #284570;   /* dark navy from brand guide */
+      --steel:      #4682b4;   /* steel blue */
+      --cyan:       #06aef1;   /* brand cyan — primary accent */
+      --cyan-light: #7fbeff;   /* light blue */
+      --cyan-mid:   #3eafe3;   /* mid blue */
+      --white:      #ffffff;
+      --black:      #000000;
+      --bg:         #f0f6fc;   /* very light blue-tinted bg */
+      --bg-mid:     #e3eef9;
+      --border:     rgba(70,130,180,0.18);
+      --text:       #1a2537;
+      --text-mid:   #374151;
+      --text-soft:  #6b7280;
+      --shadow-sm:  0 1px 8px rgba(40,69,112,0.08);
+      --shadow-md:  0 6px 32px rgba(40,69,112,0.12);
+      --shadow-lg:  0 20px 64px rgba(40,69,112,0.16);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'Public Sans', sans-serif; background: var(--white); color: var(--text); overflow-x: hidden; }
+
+    /* ══════════════════════════════════════════════
+       NAVIGATION
+    ══════════════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.85rem 2.5rem;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: box-shadow 0.3s, padding 0.3s;
+    }
+    nav.scrolled { box-shadow: var(--shadow-sm); padding: 0.6rem 2.5rem; }
+
+    .nav-logo { display: flex; align-items: center; text-decoration: none; }
+    .nav-logo img { height: 56px; width: auto; max-width: 240px; object-fit: contain; display: block; }
+    .nav-logo-fallback {
+      display: none; font-family: 'Montserrat', sans-serif;
+      font-weight: 800; font-size: 1.4rem; color: var(--navy);
+    }
+    .nav-logo-fallback span { color: var(--cyan); }
+
+    .nav-links { display: flex; align-items: center; gap: 0.2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em;
+      color: var(--navy); text-decoration: none;
+      padding: 0.45rem 0.85rem; border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-links a:hover { background: #e8f4fd; color: var(--cyan); }
+
+    .nav-right { display: flex; align-items: center; gap: 0.6rem; }
+    .btn-nav-ghost {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--navy); border: 1.5px solid var(--steel);
+      padding: 0.46rem 1.1rem; border-radius: 8px;
+      background: transparent; cursor: pointer; transition: all 0.22s; text-decoration: none;
+    }
+    .btn-nav-ghost:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+    .btn-nav-fill {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--white); background: var(--cyan);
+      padding: 0.46rem 1.25rem; border-radius: 8px;
+      border: 1.5px solid var(--cyan); cursor: pointer;
+      transition: all 0.22s; text-decoration: none;
+    }
+    .btn-nav-fill:hover { background: #0598d4; border-color: #0598d4; }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; border: none; background: none; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--navy); border-radius: 2px; transition: all 0.3s; }
+
+    /* ══════════════════════════════════════════════
+       MOBILE OVERLAY
+    ══════════════════════════════════════════════ */
+    .mobile-overlay {
+      display: none; position: fixed; inset: 0; z-index: 199;
+      background: var(--white); flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.75rem;
+    }
+    .mobile-overlay.open { display: flex; }
+    .mobile-overlay a {
+      font-family: 'Montserrat', sans-serif; font-size: 1.6rem; font-weight: 700;
+      color: var(--navy); text-decoration: none; transition: color 0.2s;
+    }
+    .mobile-overlay a:hover { color: var(--cyan); }
+    .mobile-overlay-close { position: absolute; top: 1.25rem; right: 1.75rem; font-size: 1.6rem; background: none; border: none; cursor: pointer; color: var(--text-soft); }
+    .mobile-overlay-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem; }
+
+    /* ══════════════════════════════════════════════
+       PATIENT PORTAL MODAL
+    ══════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(40,69,112,0.55); backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s; padding: 1rem;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: var(--white); border-radius: 16px; padding: 2.5rem;
+      width: 100%; max-width: 440px; position: relative;
+      transform: translateY(18px); transition: transform 0.3s;
+      max-height: 92vh; overflow-y: auto; box-shadow: var(--shadow-lg);
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+    .modal-close-btn {
+      position: absolute; top: 1rem; right: 1.25rem;
+      background: var(--bg); border: none; color: var(--text-soft);
+      cursor: pointer; width: 30px; height: 30px; border-radius: 50%;
+      font-size: 1rem; display: flex; align-items: center; justify-content: center;
+    }
+    .modal-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--navy); margin-bottom: 0.3rem; }
+    .modal-sub { font-size: 0.8rem; color: var(--text-soft); margin-bottom: 2rem; }
+    .pf-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .pf-label { font-family: 'Montserrat', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-soft); }
+    .pf-help { font-size: 0.64rem; color: var(--text-soft); margin-top: 0.3rem; line-height: 1.5; }
+    .consent-row {
+      display: flex; align-items: flex-start; gap: 0.55rem;
+      font-size: 0.68rem; color: var(--text-soft); line-height: 1.6;
+    }
+    .consent-row input[type="checkbox"] {
+      width: 16px; height: 16px; margin-top: 0.1rem; flex-shrink: 0; accent-color: var(--cyan);
+    }
+    .consent-row a { color: var(--cyan); font-weight: 600; text-decoration: none; }
+    .consent-row a:hover { text-decoration: underline; }
+    .captcha-shell {
+      min-height: 66px; border: 1.5px dashed var(--bg-mid); border-radius: 8px;
+      background: #fbfdff; padding: 0.5rem; display: flex; align-items: center; justify-content: center;
+    }
+    .captcha-shell.disabled { padding: 0.9rem; text-align: center; font-size: 0.68rem; color: var(--text-soft); line-height: 1.6; }
+    #modalPortalCaptcha { min-height: 65px; }
+    .pf-input {
+      background: var(--bg); border: 1.5px solid var(--bg-mid);
+      border-radius: 8px; padding: 0.78rem 1rem;
+      color: var(--text); font-family: 'Public Sans', sans-serif; font-size: 0.9rem;
+      outline: none; transition: border-color 0.2s; width: 100%;
+    }
+    .pf-input:focus { border-color: var(--cyan); }
+    .btn-portal-submit {
+      width: 100%; background: var(--cyan); color: var(--white);
+      font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 700;
+      padding: 0.9rem; border: none; cursor: pointer; border-radius: 8px; transition: background 0.22s;
+    }
+    .btn-portal-submit:hover { background: #0598d4; }
+    .btn-portal-submit:disabled { opacity: 0.75; cursor: wait; }
+    .portal-or { text-align: center; font-size: 0.72rem; color: var(--text-soft); margin: 0.75rem 0; position: relative; }
+    .portal-or::before, .portal-or::after { content: ''; position: absolute; top: 50%; width: 44%; height: 1px; background: var(--bg-mid); }
+    .portal-or::before { left: 0; } .portal-or::after { right: 0; }
+    .btn-portal-otp {
+      width: 100%; background: transparent; color: var(--text-mid);
+      font-family: 'Public Sans', sans-serif; font-size: 0.8rem; font-weight: 500;
+      padding: 0.78rem; border: 1.5px solid var(--bg-mid); cursor: pointer; border-radius: 8px; transition: all 0.22s;
+    }
+    .btn-portal-otp:hover { border-color: var(--cyan); color: var(--cyan); }
+    .privacy-note {
+      margin-top: 1.25rem; padding: 0.85rem 1rem;
+      background: rgba(6,174,241,0.06); border: 1px solid rgba(6,174,241,0.2);
+      border-radius: 8px; font-size: 0.7rem; color: var(--text-soft);
+      line-height: 1.65; display: flex; gap: 0.6rem; align-items: flex-start;
+    }
+    .portal-message {
+      display: none; margin: 0 0 0.9rem 0; padding: 0.65rem 0.8rem; border-radius: 8px;
+      border: 1px solid transparent; font-size: 0.74rem; line-height: 1.55;
+    }
+    .portal-message.error { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+    .portal-message.ok { background: #ecfdf5; color: #047857; border-color: #bbf7d0; }
+    .portal-message.info { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .res-table { width: 100%; border-collapse: collapse; }
+    .res-table th { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-soft); padding: 0.65rem 0.85rem; text-align: left; border-bottom: 1px solid var(--bg-mid); background: var(--bg); }
+    .res-table td { padding: 0.75rem 0.85rem; font-size: 0.8rem; color: var(--text); border-bottom: 1px solid var(--bg-mid); }
+    .s-pill { display: inline-block; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; padding: 0.2rem 0.6rem; border-radius: 20px; }
+    .s-normal { background: rgba(22,163,74,0.1); color: #15803d; }
+    .s-pending { background: rgba(6,174,241,0.1); color: #0598d4; }
+    .res-action-link {
+      display: inline-block; text-decoration: none; font-size: 0.68rem; font-weight: 700;
+      padding: 0.26rem 0.56rem; border-radius: 6px; background: rgba(6,174,241,0.12); color: #0284c7;
+      border: 1px solid rgba(6,174,241,0.25);
+    }
+    .res-action-link:hover { background: rgba(6,174,241,0.18); }
+
+    /* ══════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+      padding-top: 66px; overflow: hidden;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 4rem 3.5rem 4rem 3rem; background: var(--white); position: relative; z-index: 2;
+    }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 0.6rem; margin-bottom: 1.75rem; animation: fadeUp 0.6s ease both; }
+    .hero-eyebrow-line { width: 2rem; height: 2px; background: var(--cyan); }
+    .hero-eyebrow-text { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--cyan); font-weight: 700; }
+    .hero-h1 {
+      font-family: 'Montserrat', sans-serif; font-size: clamp(2.2rem, 3.8vw, 3.5rem);
+      font-weight: 800; line-height: 1.1; color: var(--navy);
+      margin-bottom: 1.3rem; animation: fadeUp 0.6s 0.08s ease both;
+    }
+    .hero-h1 span { color: var(--cyan); }
+    .hero-desc { font-size: 0.97rem; line-height: 1.85; font-weight: 400; color: var(--text-mid); max-width: 400px; margin-bottom: 2.25rem; animation: fadeUp 0.6s 0.16s ease both; }
+    .hero-actions { display: flex; gap: 0.85rem; flex-wrap: wrap; animation: fadeUp 0.6s 0.24s ease both; }
+    .btn-hero-primary {
+      font-family: 'Montserrat', sans-serif; font-size: 0.82rem; font-weight: 700;
+      background: var(--cyan); color: var(--white); padding: 0.9rem 2rem;
+      border-radius: 8px; border: 2px solid var(--cyan); text-decoration: none; transition: all 0.22s; display: inline-block;
+    }
+    .btn-hero-primary:hover { background: #0598d4; border-color: #0598d4; }
+    .btn-hero-secondary {
+      font-family: 'Montserrat', sans-serif; font-size: 0.82rem; font-weight: 600;
+      color: var(--navy); background: transparent; padding: 0.9rem 2rem;
+      border-radius: 8px; border: 2px solid var(--border); text-decoration: none; transition: all 0.22s; display: inline-block;
+    }
+    .btn-hero-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+    .hero-stats { display: flex; gap: 2.5rem; margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid var(--border); animation: fadeUp 0.6s 0.32s ease both; }
+    .stat-number { font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 800; color: var(--navy); line-height: 1; }
+    .stat-number sup { font-size: 1rem; color: var(--cyan); }
+    .stat-label { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-soft); margin-top: 0.35rem; line-height: 1.45; }
+    .hero-right { position: relative; overflow: hidden; background: var(--bg); }
+    .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+    .hero-img-gradient { position: absolute; inset: 0; background: linear-gradient(to right, rgba(255,255,255,0.5) 0%, transparent 35%), linear-gradient(to top, rgba(40,69,112,0.2) 0%, transparent 60%); }
+    .hero-card {
+      position: absolute; background: var(--white); border-radius: 12px;
+      box-shadow: var(--shadow-md); padding: 1.1rem 1.4rem; border: 1px solid var(--border);
+      animation: floatCard 5s ease-in-out infinite;
+    }
+    .hero-card-1 { bottom: 2.5rem; right: 2rem; }
+    .hero-card-2 { top: 28%; left: -1.2rem; animation-delay: 1.5s; }
+    @keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .hc-label { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 0.3rem; font-weight: 600; }
+    .hc-value { font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--navy); }
+    .hc-sub { font-size: 0.68rem; color: var(--cyan); margin-top: 0.15rem; }
+
+    /* ══════════════════════════════════════════════
+       TRUST BAR
+    ══════════════════════════════════════════════ */
+    .trust-bar { background: var(--navy); display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
+    .trust-item { display: flex; align-items: center; gap: 0.75rem; padding: 1.4rem 2rem; border-right: 1px solid rgba(255,255,255,0.08); flex: 1; min-width: 180px; }
+    .trust-item:last-child { border-right: none; }
+    .trust-icon-wrap { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; background: rgba(6,174,241,0.15); display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .ti-title { font-family: 'Montserrat', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--white); line-height: 1.3; }
+    .ti-sub { font-size: 0.65rem; color: rgba(255,255,255,0.45); margin-top: 0.1rem; }
+
+    /* ══════════════════════════════════════════════
+       SECTION COMMONS
+    ══════════════════════════════════════════════ */
+    .section { padding: 6rem 3rem; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+    .eyebrow-line { width: 1.5rem; height: 2px; background: var(--cyan); }
+    .eyebrow-text { font-family: 'Montserrat', sans-serif; font-size: 0.58rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--cyan); font-weight: 700; }
+    .section-title { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem, 2.8vw, 2.5rem); font-weight: 800; line-height: 1.15; color: var(--navy); }
+    .section-title em { font-style: normal; color: var(--cyan); }
+    .section-title.on-dark { color: var(--white); }
+    .section-title.on-dark em { color: var(--cyan-light); }
+
+    /* ══════════════════════════════════════════════
+       SERVICES
+    ══════════════════════════════════════════════ */
+    .services-section { background: var(--bg); }
+    .services-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; gap: 1.5rem; flex-wrap: wrap; }
+    .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--bg-mid); border-radius: 12px; overflow: hidden; border: 1px solid var(--bg-mid); }
+    .svc-card { background: var(--white); padding: 2rem 1.6rem; transition: background 0.25s; cursor: pointer; position: relative; overflow: hidden; }
+    .svc-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--cyan); transform: scaleX(0); transform-origin: left; transition: transform 0.28s ease; }
+    .svc-card:hover { background: #f0f9ff; }
+    .svc-card:hover::after { transform: scaleX(1); }
+    .svc-icon { width: 42px; height: 42px; border-radius: 8px; background: var(--bg); border: 1px solid var(--bg-mid); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 1.2rem; transition: all 0.25s; }
+    .svc-card:hover .svc-icon { background: #e0f4fd; border-color: rgba(6,174,241,0.25); }
+    .svc-name { font-family: 'Montserrat', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; line-height: 1.3; }
+    .svc-desc { font-size: 0.76rem; line-height: 1.7; color: var(--text-soft); margin-bottom: 1rem; }
+    .svc-price { font-family: 'Montserrat', sans-serif; font-size: 0.68rem; color: var(--cyan); font-weight: 700; }
+
+    /* ══════════════════════════════════════════════
+       PACKAGES
+    ══════════════════════════════════════════════ */
+    .packages-section { background: var(--navy); }
+    .pkg-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; gap: 1.5rem; flex-wrap: wrap; }
+    .pkg-header-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .pkg-name { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--white); margin-bottom: 0.4rem; }
+    .pkg-desc { font-size: 0.75rem; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 1.5rem; }
+    .pkg-price-block { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .pkg-original { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; color: rgba(255,255,255,0.3); text-decoration: line-through; margin-bottom: 0.2rem; }
+    .pkg-price { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 800; color: var(--cyan); line-height: 1; }
+    .pkg-price.featured-price { color: var(--white); }
+    .pkg-price small { font-size: 0.82rem; font-family: 'Public Sans', sans-serif; color: rgba(255,255,255,0.35); font-weight: 300; }
+    .pkg-list { list-style: none; margin-bottom: 2rem; }
+    .pkg-list li { font-size: 0.78rem; color: rgba(255,255,255,0.72); padding: 0.42rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 0.55rem; }
+    .pkg-list li::before { content: '✓'; color: var(--cyan); font-size: 0.72rem; flex-shrink: 0; font-weight: 800; }
+    .pkg-source-note { margin-top: 1rem; font-size: 0.68rem; color: rgba(255,255,255,0.45); text-align: center; }
+    .pkg-source-note a { color: var(--cyan-light); text-decoration: none; }
+    .pkg-source-note a:hover { text-decoration: underline; }
+    .btn-ghost-pkg {
+      font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 600;
+      color: rgba(255,255,255,0.5); background: transparent;
+      padding: 0.6rem 1.4rem; border: 1px solid rgba(255,255,255,0.18);
+      cursor: pointer; border-radius: 8px; transition: all 0.22s; text-decoration: none; display: inline-block;
+    }
+    .btn-ghost-pkg:hover { border-color: rgba(255,255,255,0.4); color: var(--white); }
+    .pkg-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2rem; }
+    .pkg-summary-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 12px;
+      padding: 1.15rem 1rem;
+    }
+    .pkg-summary-type {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.56rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--cyan-light);
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+    .pkg-summary-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      color: var(--white);
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 0.4rem;
+    }
+    .pkg-summary-desc { font-size: 0.73rem; color: rgba(255,255,255,0.68); line-height: 1.55; margin-bottom: 0.65rem; }
+    .pkg-summary-range {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 0.65rem;
+    }
+    .pkg-summary-list { list-style: none; display: flex; flex-direction: column; gap: 0.28rem; }
+    .pkg-summary-list li { font-size: 0.72rem; color: rgba(255,255,255,0.75); line-height: 1.45; }
+    .pkg-summary-cta { display: flex; justify-content: center; gap: 0.7rem; flex-wrap: wrap; margin-top: 2.1rem; }
+
+    /* ══════════════════════════════════════════════
+       DOCTORS
+    ══════════════════════════════════════════════ */
+    .doctors-section { background: var(--white); }
+    .doc-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0 2.5rem; }
+    .doc-filter-btn {
+      font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 600;
+      padding: 0.42rem 1.1rem; border-radius: 100px; border: 1.5px solid var(--border);
+      background: var(--white); color: var(--text-mid); cursor: pointer; transition: all 0.2s;
+    }
+    .doc-filter-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .doc-filter-btn.active { background: var(--cyan); color: var(--white); border-color: var(--cyan); }
+    .doc-card.hidden { display: none; }
+    .docs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-top: 2rem; }
+    .doc-card { border-radius: 12px; overflow: hidden; background: var(--bg); border: 1.5px solid transparent; transition: all 0.28s; }
+    .doc-card:hover { border-color: var(--cyan); transform: translateY(-5px); box-shadow: var(--shadow-md); }
+    .doc-photo {
+      width: 100%; height: 190px; overflow: hidden; background: var(--white);
+      display: flex; align-items: center; justify-content: center; padding: 0.8rem;
+    }
+    .doc-avatar {
+      width: 132px; height: 132px; border-radius: 999px;
+      object-fit: cover; object-position: center;
+      background: #fff; border: 3px solid var(--white);
+      box-shadow: 0 10px 28px rgba(40,69,112,0.18);
+      display: block;
+    }
+    .doc-icon {
+      width: 132px; height: 132px; border-radius: 999px;
+      background: linear-gradient(135deg, #e8f8ff, #f8fdff);
+      border: 3px solid var(--white);
+      box-shadow: 0 10px 28px rgba(40,69,112,0.18);
+      position: relative; display: inline-block;
+    }
+    .doc-icon::before,
+    .doc-icon::after {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--cyan);
+      border-radius: 999px;
+    }
+    .doc-icon::before { width: 46px; height: 13px; }
+    .doc-icon::after { width: 13px; height: 46px; }
+    .doc-info { padding: 1.1rem; }
+    .doc-spec { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--cyan); margin-bottom: 0.35rem; font-weight: 700; }
+    .doc-name { font-family: 'Montserrat', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 0.3rem; line-height: 1.3; }
+    .doc-sched { font-size: 0.7rem; color: var(--text-soft); line-height: 1.55; }
+    .doc-sched em { font-style: italic; color: var(--steel); }
+    .docs-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+    .doc-summary-card {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1rem;
+    }
+    .doc-summary-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.7rem; }
+    .doc-summary-spec { font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--navy); }
+    .doc-summary-count { font-family: 'Montserrat', sans-serif; font-size: 0.68rem; font-weight: 700; color: var(--cyan); }
+    .doc-summary-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .doc-summary-list li { font-size: 0.76rem; color: var(--text-mid); line-height: 1.45; }
+    .docs-summary-cta { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; margin-top: 2.2rem; }
+    .docs-notice { text-align: center; margin: 2rem auto 0; font-size: 0.75rem; color: var(--text-soft); padding: 0.85rem 1.5rem; background: rgba(6,174,241,0.06); border: 1px solid rgba(6,174,241,0.2); border-radius: 8px; line-height: 1.6; max-width: 620px; }
+    .docs-cta { text-align: center; margin-top: 2.5rem; }
+
+    /* ══════════════════════════════════════════════
+       PATIENT PORTAL
+    ══════════════════════════════════════════════ */
+    .portal-section { background: var(--bg); position: relative; overflow: hidden; }
+    .portal-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+    .portal-features { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2.5rem; }
+    .pf-item { display: flex; gap: 1.1rem; align-items: flex-start; }
+    .pf-icon { width: 44px; height: 44px; flex-shrink: 0; border-radius: 8px; background: var(--white); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; box-shadow: var(--shadow-sm); }
+    .pf-title { font-family: 'Montserrat', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--navy); margin-bottom: 0.25rem; }
+    .pf-desc { font-size: 0.76rem; color: var(--text-soft); line-height: 1.65; }
+    .portal-login-card { background: var(--white); border-radius: 14px; padding: 2.2rem; box-shadow: var(--shadow-md); border: 1px solid var(--border); }
+    .plc-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .plc-title { font-family: 'Montserrat', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-soft); }
+    .plc-secure { display: flex; align-items: center; gap: 0.35rem; font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #16a34a; }
+    .secure-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: blink 2s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+    /* ══════════════════════════════════════════════
+       HMO TICKER
+    ══════════════════════════════════════════════ */
+    .hmo-section { background: var(--white); padding: 5rem 0; overflow: hidden; }
+    .hmo-header { padding: 0 3rem; text-align: center; margin-bottom: 3rem; }
+    .hmo-sub { font-size: 0.87rem; color: var(--text-soft); margin-top: 0.6rem; line-height: 1.65; }
+    .ticker-wrapper { position: relative; overflow: hidden; width: 100%; }
+    .ticker-wrapper::before, .ticker-wrapper::after { content: ''; position: absolute; top: 0; bottom: 0; width: 100px; z-index: 2; pointer-events: none; }
+    .ticker-wrapper::before { left: 0; background: linear-gradient(to right, var(--white), transparent); }
+    .ticker-wrapper::after { right: 0; background: linear-gradient(to left, var(--white), transparent); }
+    .ticker-track { display: flex; align-items: center; width: max-content; animation: scroll 35s linear infinite; }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+    .hmo-logo-card { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 170px; height: 92px; margin: 0 0.75rem; background: var(--bg); border: 1px solid var(--bg-mid); border-radius: 10px; flex-shrink: 0; transition: all 0.25s; padding: 0.85rem 1.1rem; }
+    .hmo-logo-card:hover { border-color: var(--cyan); background: var(--white); box-shadow: 0 4px 20px rgba(6,174,241,0.12); transform: translateY(-3px); }
+    .hmo-logo-card img { width: 100%; height: 100%; max-width: 130px; max-height: 56px; object-fit: contain; object-position: center; }
+    .hmo-logo-card img.logo-icare { max-width: 130px; max-height: 56px; transform: none; }
+    .hmo-name-fallback { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-mid); text-align: center; font-weight: 600; }
+
+    /* ══════════════════════════════════════════════
+       CONTACT
+    ══════════════════════════════════════════════ */
+    .contact-section { background: var(--navy); display: grid; grid-template-columns: 1fr 1.2fr; }
+    .contact-left { padding: 6rem 3rem; }
+    .contact-right { background: rgba(255,255,255,0.025); border-left: 1px solid rgba(255,255,255,0.06); padding: 6rem 3rem; display: flex; flex-direction: column; gap: 2.5rem; }
+    .ci-label { font-family: 'Montserrat', sans-serif; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cyan); margin-bottom: 0.4rem; font-weight: 700; }
+    .ci-val { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.75; }
+    .ci-val a { color: var(--cyan); text-decoration: none; transition: opacity 0.2s; }
+    .ci-val a:hover { opacity: 0.7; }
+    .ci-info { display: flex; flex-direction: column; gap: 1.75rem; margin-top: 2.5rem; }
+    .ci-map-wrap {
+      margin-top: 0.25rem;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.04);
+    }
+    .ci-map {
+      width: 100%;
+      height: 260px;
+      border: 0;
+      display: block;
+    }
+    .ci-map-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      padding: 0.72rem 0.85rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.02);
+    }
+    .ci-map-note { font-size: 0.68rem; color: rgba(255,255,255,0.58); }
+    .ci-map-link {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--cyan);
+    }
+    .ci-map-link:hover { opacity: 0.8; }
+    .cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+    .cf-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.85rem; }
+    .cf-label { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+    .cf-input { background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.78rem 1rem; color: var(--white); font-family: 'Public Sans', sans-serif; font-size: 0.88rem; outline: none; transition: border-color 0.2s; width: 100%; }
+    .cf-input::placeholder { color: rgba(255,255,255,0.22); }
+    .cf-input:focus { border-color: var(--cyan); }
+    .cf-input option { color: var(--text); background: var(--white); }
+    .btn-send { width: 100%; background: var(--cyan); color: var(--white); font-family: 'Montserrat', sans-serif; font-size: 0.84rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.95rem; border: none; cursor: pointer; border-radius: 8px; transition: background 0.22s; }
+    .btn-send:hover { background: #0598d4; }
+
+    /* ══════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════ */
+    footer { background: #0d1f3c; padding: 2.25rem 3rem; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.04); flex-wrap: wrap; gap: 1.25rem; }
+    .footer-logo img { height: 42px; width: auto; opacity: 0.9; object-fit: contain; }
+    .footer-copy { font-size: 0.68rem; color: rgba(255,255,255,0.22); }
+    .footer-links { display: flex; gap: 1.5rem; list-style: none; }
+    .footer-links a { font-size: 0.68rem; color: rgba(255,255,255,0.28); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--cyan); }
+
+    /* ══════════════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════════════ */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+    .fade-in { opacity: 0; transform: translateY(22px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ══════════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════════ */
+    @media (max-width: 1100px) {
+      .services-grid { grid-template-columns: repeat(2, 1fr); }
+      .pkg-summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .docs-grid { grid-template-columns: repeat(3, 1fr); }
+      .docs-summary-grid { grid-template-columns: repeat(2, 1fr); }
+      .portal-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .contact-section { grid-template-columns: 1fr; }
+      .contact-left, .contact-right { padding: 4rem 3rem; }
+      .contact-right { border-left: none; border-top: 1px solid rgba(255,255,255,0.06); }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 0.75rem 1.25rem; }
+      .nav-logo img { height: 44px; max-width: 188px; }
+      .nav-links, .nav-right { display: none; }
+      .hamburger { display: flex; }
+      .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 62px; }
+      .hero-left { padding: 3rem 1.5rem; }
+      .hero-right { height: 300px; }
+      .hero-card-2 { display: none; }
+      .section { padding: 4.5rem 1.5rem; }
+      .pkg-header-actions { width: 100%; }
+      .pkg-header-actions .btn-ghost-pkg { flex: 1; text-align: center; }
+      .pkg-summary-grid { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      .docs-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .docs-summary-grid { grid-template-columns: 1fr; }
+      .contact-left, .contact-right { padding: 4rem 1.5rem; }
+      .ci-map { height: 220px; }
+      footer { flex-direction: column; padding: 2rem 1.5rem; align-items: flex-start; }
+      .trust-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; }
+      .trust-item:last-child { border-bottom: none; }
+      .hmo-header { padding: 0 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .docs-grid { grid-template-columns: 1fr; }
+      .cf-row { grid-template-columns: 1fr; }
+      .hero-stats { gap: 1.25rem; }
+      .footer-links { flex-wrap: wrap; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- MOBILE OVERLAY -->
+<div class="mobile-overlay" id="mobileOverlay">
+  <button class="mobile-overlay-close" onclick="closeMobile()">✕</button>
+  <a href="#services" onclick="closeMobile()">Services</a>
+  <a href="all-packages.html" onclick="closeMobile()">Packages</a>
+  <a href="physicians-schedules.html" onclick="closeMobile()">Specialists</a>
+  <a href="#hmo" onclick="closeMobile()">HMO</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+  <div class="mobile-overlay-actions">
+    <a href="#" onclick="openModal(); closeMobile(); return false;" class="btn-nav-ghost">Patient Portal</a>
+    <a href="#packages" onclick="closeMobile();" class="btn-nav-fill">Book Now</a>
+  </div>
+</div>
+
+<!-- PATIENT PORTAL MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-title">Patient Portal</div>
+    <p class="modal-sub">Sign in securely to access your laboratory results.</p>
+    <div id="loginView">
+      <div id="portalMessage" class="portal-message" role="status" aria-live="polite"></div>
+      <div class="pf-group">
+        <label class="pf-label">Patient User ID</label>
+        <input type="text" class="pf-input" id="modalPortalControl" placeholder="eg. DRM-0001" />
+      </div>
+      <div class="pf-group">
+        <label class="pf-label">Secure PIN / Claim Password</label>
+        <input type="password" class="pf-input" id="modalPortalPin" placeholder="Enter Secure PIN" inputmode="numeric" autocomplete="off" />
+        <div class="pf-help">You can find your Secure PIN printed on your official laboratory receipt.</div>
+      </div>
+      <div class="pf-group">
+        <label class="consent-row">
+          <input type="checkbox" id="modalPortalConsent" />
+          <span>I have read the <a href="terms-of-use.html" target="_blank" rel="noopener noreferrer">Terms of Use</a> and <a href="privacy-notice.html" target="_blank" rel="noopener noreferrer">Data Privacy Notice</a>, and I consent to processing my data for releasing my laboratory results.</span>
+        </label>
+      </div>
+      <div class="pf-group">
+        <div class="captcha-shell" id="modalPortalCaptchaShell">
+          <div id="modalPortalCaptcha"></div>
+        </div>
+        <div class="pf-help">Complete CAPTCHA before continuing.</div>
+      </div>
+      <button class="btn-portal-submit" id="modalPortalSubmit" onclick="validatePortalLogin()">Access My Results →</button>
+      <div class="privacy-note">🔒 Protected under the Philippine Data Privacy Act (RA 10173). Results accessible only to the patient or authorized representatives.</div>
+    </div>
+    <div id="resultsView" style="display:none;">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--bg-mid);">
+        <div id="portalPatientInitials" style="width:42px;height:42px;border-radius:50%;background:var(--bg);border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:1rem;color:var(--cyan);font-weight:800;">--</div>
+        <div>
+          <div id="portalPatientName" style="font-family:'Montserrat',sans-serif;font-size:1rem;color:var(--navy);font-weight:700;">Patient</div>
+          <div id="portalPatientMeta" style="font-family:'Montserrat',sans-serif;font-size:0.6rem;color:var(--text-soft);letter-spacing:0.12em;">Patient User ID</div>
+        </div>
+      </div>
+      <table class="res-table">
+        <thead><tr><th>Visit #</th><th>Test</th><th>Test Date</th><th>Released</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="portalResultsBody">
+          <tr><td colspan="6" style="color:var(--text-soft);font-size:0.72rem;">No reports loaded yet.</td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex;gap:0.75rem;margin-top:1.4rem;">
+        <button class="btn-portal-submit" style="flex:1;font-size:0.74rem;" onclick="closeModal()">Done</button>
+        <button class="btn-portal-otp" style="padding:0.78rem 1.1rem;white-space:nowrap;" onclick="showLogin()">Check Another Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<nav id="mainNav">
+  <a class="nav-logo" href="#" id="navLogoLink">
+    <img src="DRMED LOGO.png" alt="DRMed Healthcare Inc." id="navLogoImg"
+      onerror="this.src='assets/drmed-cdn/wh_edc23af8-cad1-472d-a472-a8c26f1cd5fe.png'; this.onerror=null;" />
+    <span class="nav-logo-fallback" id="navLogoFallback"><span>DR</span>Med</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="all-packages.html">Packages</a></li>
+    <li><a href="physicians-schedules.html">Specialists</a></li>
+    <li><a href="#hmo">HMO Partners</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <a class="btn-nav-ghost" href="#" onclick="openModal(); return false;">Patient Portal</a>
+    <a class="btn-nav-fill" href="#packages">Book Now</a>
+  </div>
+  <button class="hamburger" onclick="openMobile()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home" style="padding:0;margin-top:0;">
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-line"></div>
+      <div class="hero-eyebrow-text">Premier Diagnostic Care · Quezon City</div>
+    </div>
+    <h1 class="hero-h1">Your Family's<br>Well-Being is<br><span>Our Mission.</span></h1>
+    <p class="hero-desc">Comprehensive medical services including doctor's consultations, laboratory tests, X-ray, ultrasound, ECG, home service and mobile clinic — at up to 50% less than hospitals.</p>
+    <div class="hero-actions">
+      <a class="btn-hero-primary" href="#packages">View Packages</a>
+      <a class="btn-hero-secondary" href="physicians-schedules.html">Meet Our Doctors</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-number">19<sup>+</sup></div>
+        <div class="stat-label">Specialist<br>Physicians</div>
+      </div>
+      <div>
+        <div class="stat-number">10<sup>+</sup></div>
+        <div class="stat-label">HMO<br>Partners</div>
+      </div>
+      <div>
+        <div class="stat-number">50<sup>%</sup></div>
+        <div class="stat-label">Less vs.<br>Hospitals</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img class="hero-img" src="assets/drmed-cdn/0-02-06-85642034e25061ef8db27c89559d7a3c705553839ee65e1ca524620062a1654d_264d50141a8.jpg" alt="DRMed Clinic" onerror="this.style.display='none'" />
+    <div class="hero-img-gradient"></div>
+    <div class="hero-card hero-card-1">
+      <div class="hc-label">Accredited Facility</div>
+      <div class="hc-value">10 HMO Partners</div>
+      <div class="hc-sub">Cashless · No hassle</div>
+    </div>
+    <div class="hero-card hero-card-2">
+      <div class="hc-label">Average Turnaround</div>
+      <div class="hc-value">24 Hours</div>
+      <div class="hc-sub">Most tests same-day</div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item"><div class="trust-icon-wrap">🏥</div><div><div class="ti-title">Accredited Clinic & Lab</div><div class="ti-sub">DOH-compliant facility</div></div></div>
+  <div class="trust-item"><div class="trust-icon-wrap">⚡</div><div><div class="ti-title">Results in 24 Hours</div><div class="ti-sub">Most tests same-day</div></div></div>
+  <div class="trust-item"><div class="trust-icon-wrap">💰</div><div><div class="ti-title">Up to 50% Less</div><div class="ti-sub">vs. hospitals & other clinics</div></div></div>
+  <div class="trust-item"><div class="trust-icon-wrap">🏠</div><div><div class="ti-title">Home & Mobile Service</div><div class="ti-sub">We come to you</div></div></div>
+  <div class="trust-item"><div class="trust-icon-wrap">💳</div><div><div class="ti-title">HMO Accepted</div><div class="ti-sub">10 major providers</div></div></div>
+</div>
+
+<!-- SERVICES -->
+<section class="section services-section" id="services">
+  <div class="services-header fade-in">
+    <div>
+      <div class="eyebrow"><div class="eyebrow-line"></div><div class="eyebrow-text">Clinic & Lab Services</div></div>
+      <h2 class="section-title">Everything Under<br><em>One Roof</em></h2>
+    </div>
+    <a class="btn-hero-primary" href="#packages">View All Packages →</a>
+  </div>
+  <div class="services-grid fade-in">
+    <div class="svc-card"><div class="svc-icon">🩺</div><div class="svc-name">Doctor's Consultation</div><div class="svc-desc">Initial and follow-up consultations with our team of licensed physicians and specialists.</div><div class="svc-price">from ₱500</div></div>
+    <div class="svc-card"><div class="svc-icon">🧪</div><div class="svc-name">Laboratory Tests</div><div class="svc-desc">CBC, urinalysis, blood chemistry, lipid profiles, thyroid panels, and more.</div><div class="svc-price">Varies by test</div></div>
+    <div class="svc-card"><div class="svc-icon">🩻</div><div class="svc-name">X-Ray Imaging</div><div class="svc-desc">Digital chest X-ray with rapid radiologist interpretation.</div><div class="svc-price">from ₱550</div></div>
+    <div class="svc-card"><div class="svc-icon">🫀</div><div class="svc-name">ECG</div><div class="svc-desc">12-lead electrocardiogram with same-day results and physician interpretation.</div><div class="svc-price">Inquire</div></div>
+    <div class="svc-card"><div class="svc-icon">🔊</div><div class="svc-name">Ultrasound</div><div class="svc-desc">Whole abdomen, pelvic, thyroid, and other ultrasound services available.</div><div class="svc-price">Inquire</div></div>
+    <div class="svc-card"><div class="svc-icon">📋</div><div class="svc-name">Fit to Work / Pre-Employment</div><div class="svc-desc">Complete medical clearance packages for individuals and corporate clients.</div><div class="svc-price">from ₱400</div></div>
+    <div class="svc-card"><div class="svc-icon">🏠</div><div class="svc-name">Home Service</div><div class="svc-desc">Lab collection and medical consultation brought directly to your home or office.</div><div class="svc-price">Inquire</div></div>
+    <div class="svc-card"><div class="svc-icon">🚐</div><div class="svc-name">Mobile Clinic</div><div class="svc-desc">Bring the clinic to your community, school, or company for mass health screenings.</div><div class="svc-price">Inquire</div></div>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section class="section packages-section" id="packages">
+  <div class="pkg-header fade-in">
+    <div>
+      <div class="eyebrow"><div class="eyebrow-line"></div><div class="eyebrow-text">Health Packages</div></div>
+      <h2 class="section-title on-dark">Diagnostic Package <em>Summary</em></h2>
+      <p style="margin-top:0.8rem;color:rgba(255,255,255,0.62);font-size:0.82rem;line-height:1.75;max-width:650px;">Quick overview of our most requested package groups. For full inclusions, exact test lists, and complete price details, open the detailed packages page.</p>
+    </div>
+    <div class="pkg-header-actions">
+      <a class="btn-ghost-pkg" href="all-packages.html">View Detailed Packages →</a>
+      <a class="btn-ghost-pkg" href="#contact">Custom Corporate Package →</a>
+    </div>
+  </div>
+  <div class="pkg-summary-grid fade-in">
+    <article class="pkg-summary-card">
+      <div class="pkg-summary-type">Preventive Care</div>
+      <h3 class="pkg-summary-title">Basic, Routine, and Annual Checkups</h3>
+      <p class="pkg-summary-desc">Most requested screening bundles for regular health monitoring and annual assessment.</p>
+      <div class="pkg-summary-range">Starts at ₱950 · up to ₱1,999</div>
+      <ul class="pkg-summary-list">
+        <li>Basic Package</li>
+        <li>Routine Package (Most Popular)</li>
+        <li>Annual Physical Exam</li>
+      </ul>
+    </article>
+    <article class="pkg-summary-card">
+      <div class="pkg-summary-type">Executive</div>
+      <h3 class="pkg-summary-title">Professional and Executive Panels</h3>
+      <p class="pkg-summary-desc">Comprehensive health profiles with imaging, ECG, and advanced blood work for professionals.</p>
+      <div class="pkg-summary-range">From ₱5,888</div>
+      <ul class="pkg-summary-list">
+        <li>Standard Executive</li>
+        <li>Comprehensive Executive</li>
+        <li>Deluxe Executive</li>
+      </ul>
+    </article>
+    <article class="pkg-summary-card">
+      <div class="pkg-summary-type">Specialized Lab Tests</div>
+      <h3 class="pkg-summary-title">Focused Diagnostic Panels</h3>
+      <p class="pkg-summary-desc">Targeted test sets for thyroid, lipid, kidney, liver, and iron-related monitoring.</p>
+      <div class="pkg-summary-range">From ₱699</div>
+      <ul class="pkg-summary-list">
+        <li>Thyroid Function Package</li>
+        <li>Lipid, Liver, and Kidney Panels</li>
+        <li>Iron Deficiency Package</li>
+      </ul>
+    </article>
+    <article class="pkg-summary-card">
+      <div class="pkg-summary-type">Custom Plans</div>
+      <h3 class="pkg-summary-title">Corporate and Group Packages</h3>
+      <p class="pkg-summary-desc">Pre-employment, annual corporate screening, and customized diagnostics based on company needs.</p>
+      <div class="pkg-summary-range">Custom quote</div>
+      <ul class="pkg-summary-list">
+        <li>Fit-to-work and onboarding bundles</li>
+        <li>Onsite and volume screening options</li>
+        <li>Flexible inclusions by request</li>
+      </ul>
+    </article>
+  </div>
+  <div class="pkg-summary-cta fade-in">
+    <a class="btn-hero-primary" href="all-packages.html">Open Detailed Packages →</a>
+    <a class="btn-hero-secondary" href="#contact">Book or Request a Custom Package</a>
+  </div>
+  <p class="pkg-source-note">Detailed package inclusions and prices are available on the dedicated page. Prices may change without prior notice.</p>
+</section>
+
+<!-- DOCTORS -->
+<section class="section doctors-section" id="doctors">
+  <div class="fade-in">
+    <div class="eyebrow"><div class="eyebrow-line"></div><div class="eyebrow-text">Our Specialists</div></div>
+    <h2 class="section-title">Meet Our <em>Doctors</em></h2>
+    <p style="margin-top:0.75rem;color:var(--text-soft);font-size:0.88rem;max-width:680px;line-height:1.75;">DRMed has 19+ board-certified physicians across key specialties. For complete schedules and doctor photos, open the detailed schedules page.</p>
+  </div>
+
+  <div class="docs-summary-grid fade-in">
+    <article class="doc-summary-card">
+      <div class="doc-summary-top"><div class="doc-summary-spec">OB-GYN</div><div class="doc-summary-count">2 physicians</div></div>
+      <ul class="doc-summary-list">
+        <li>Dr. Maria Cecilia Castelo-Brojas</li>
+        <li>Dr. Nadia Mariano</li>
+      </ul>
+    </article>
+    <article class="doc-summary-card">
+      <div class="doc-summary-top"><div class="doc-summary-spec">Family Medicine</div><div class="doc-summary-count">3 physicians</div></div>
+      <ul class="doc-summary-list">
+        <li>Dr. Julie Ann Pacis-Caling</li>
+        <li>Dr. Armelle Keisha Mendoza</li>
+        <li>Dr. Jaemari Elleazar</li>
+      </ul>
+    </article>
+    <article class="doc-summary-card">
+      <div class="doc-summary-top"><div class="doc-summary-spec">Pediatrics</div><div class="doc-summary-count">3 physicians</div></div>
+      <ul class="doc-summary-list">
+        <li>Dr. Katherine Gayo</li>
+        <li>Dr. Dominique Antonio</li>
+        <li>Dr. Aurora Vicencio</li>
+      </ul>
+    </article>
+    <article class="doc-summary-card">
+      <div class="doc-summary-top"><div class="doc-summary-spec">Internal Medicine</div><div class="doc-summary-count">6 physicians</div></div>
+      <ul class="doc-summary-list">
+        <li>Dr. Robert Vicencio</li>
+        <li>Dr. Archangel Manuel</li>
+        <li>Dr. Ferdinand Dantes</li>
+        <li>Dr. Angelle Dantes · Dr. Lei Baldeviso · Dr. Gideon Libiran</li>
+      </ul>
+    </article>
+    <article class="doc-summary-card">
+      <div class="doc-summary-top"><div class="doc-summary-spec">ENT</div><div class="doc-summary-count">2 physicians</div></div>
+      <ul class="doc-summary-list">
+        <li>Dr. Angelica Lorenzo</li>
+        <li>Dr. Claudette Anglo</li>
+      </ul>
+    </article>
+    <article class="doc-summary-card">
+      <div class="doc-summary-top"><div class="doc-summary-spec">Other Specialties</div><div class="doc-summary-count">3 physicians</div></div>
+      <ul class="doc-summary-list">
+        <li>Dr. Alain Arcega (Ophthalmology)</li>
+        <li>Dr. Daniel John Mariano (Radiology)</li>
+        <li>Dr. Mary Rose Alvarez (Surgery)</li>
+      </ul>
+    </article>
+  </div>
+
+  <p class="docs-notice fade-in">⚠️ Schedules may change without prior notice. Kindly call or message us to book your appointment and confirm availability.</p>
+  <div class="docs-summary-cta fade-in">
+    <a class="btn-hero-primary" href="physicians-schedules.html">View Detailed Schedules →</a>
+    <a class="btn-hero-secondary" href="#contact">Book an Appointment</a>
+  </div>
+</section>
+
+<!-- PATIENT PORTAL -->
+<section class="section portal-section" id="portal">
+  <div class="portal-inner">
+    <div class="fade-in">
+      <div class="eyebrow"><div class="eyebrow-line"></div><div class="eyebrow-text">Patient Portal</div></div>
+      <h2 class="section-title">Your Results,<br><em>Securely Accessible</em></h2>
+      <p style="margin-top:1rem;color:var(--text-soft);font-size:0.9rem;line-height:1.85;max-width:420px;">No more waiting in queues. Access your complete lab results online, anytime — secured with your receipt-issued claim password and Philippine Data Privacy Act compliance.</p>
+      <div class="portal-features">
+        <div class="pf-item"><div class="pf-icon">🔑</div><div><div class="pf-title">Secure PIN Access</div><div class="pf-desc">Sign in using the claim password printed on your official laboratory receipt.</div></div></div>
+        <div class="pf-item"><div class="pf-icon">📄</div><div><div class="pf-title">PDF Download</div><div class="pf-desc">Download official signed lab results, ready to share with your physician.</div></div></div>
+        <div class="pf-item"><div class="pf-icon">📜</div><div><div class="pf-title">Full History Access</div><div class="pf-desc">View all past results. Track your health trends over time.</div></div></div>
+        <div class="pf-item"><div class="pf-icon">🛡️</div><div><div class="pf-title">RA 10173 Compliant</div><div class="pf-desc">All records handled in accordance with the Philippine Data Privacy Act.</div></div></div>
+      </div>
+    </div>
+    <div class="fade-in">
+      <div class="portal-login-card">
+        <div class="plc-header">
+          <div class="plc-title">Secure Patient Sign-In</div>
+          <div class="plc-secure"><div class="secure-dot"></div>Encrypted</div>
+        </div>
+        <div class="pf-group"><label class="pf-label">Patient User ID</label><input type="text" class="pf-input" id="inlinePortalControl" placeholder="DRM-0001" /></div>
+        <div class="pf-group"><label class="pf-label">Secure PIN / Claim Password</label><input type="password" class="pf-input" id="inlinePortalPin" placeholder="Enter Secure PIN" inputmode="numeric" autocomplete="off" /><div class="pf-help">You can find your Secure PIN printed on your official laboratory receipt.</div></div>
+        <div class="pf-help" style="margin:0 0 0.9rem 0;">After clicking submit, confirm Terms of Use and complete CAPTCHA in the portal modal.</div>
+        <button class="btn-portal-submit" onclick="portalOpenFromSection()">Access My Results →</button>
+        <div class="privacy-note" style="background:rgba(6,174,241,0.06);border-color:rgba(6,174,241,0.2);">🔒 Protected under Philippine Data Privacy Act (RA 10173).</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HMO PARTNERS -->
+<section class="hmo-section" id="hmo">
+  <div class="hmo-header fade-in">
+    <div class="eyebrow" style="justify-content:center;"><div class="eyebrow-line"></div><div class="eyebrow-text">Accredited HMO Partners</div><div class="eyebrow-line"></div></div>
+    <h2 class="section-title" style="margin-bottom:0.5rem;">We Accept Your <em>HMO</em></h2>
+    <p class="hmo-sub">Present your HMO card at the clinic. Cashless transactions available for all covered services.</p>
+  </div>
+  <div class="ticker-wrapper">
+    <div class="ticker-track" id="tickerTrack">
+      <div class="hmo-logo-card"><img src="assets/hmo-google/maxicare.png" loading="lazy" referrerpolicy="no-referrer" alt="Maxicare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Maxicare</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/intellicare.png" loading="lazy" referrerpolicy="no-referrer" alt="Intellicare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Intellicare</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/valucare.png" loading="lazy" referrerpolicy="no-referrer" alt="ValuCare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">ValuCare</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/cocolife.png" loading="lazy" referrerpolicy="no-referrer" alt="Cocolife" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Cocolife</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/etiqa.png" loading="lazy" referrerpolicy="no-referrer" alt="Etiqa" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Etiqa</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/medasia-avega.png" loading="lazy" referrerpolicy="no-referrer" alt="MedAsia AVEGA" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">MedAsia AVEGA</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/generali.png" loading="lazy" referrerpolicy="no-referrer" alt="Generali" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Generali</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/amaphil.png" loading="lazy" referrerpolicy="no-referrer" alt="Amaphil" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Amaphil</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/philhealth.png" loading="lazy" referrerpolicy="no-referrer" alt="PhilHealth" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">PhilHealth</span></div>
+      <div class="hmo-logo-card"><img class="logo-icare" src="assets/hmo-google/icare.png" loading="lazy" referrerpolicy="no-referrer" alt="iCare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">iCare</span></div>
+      <!-- Duplicate for infinite loop -->
+      <div class="hmo-logo-card"><img src="assets/hmo-google/maxicare.png" loading="lazy" referrerpolicy="no-referrer" alt="Maxicare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Maxicare</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/intellicare.png" loading="lazy" referrerpolicy="no-referrer" alt="Intellicare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Intellicare</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/valucare.png" loading="lazy" referrerpolicy="no-referrer" alt="ValuCare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">ValuCare</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/cocolife.png" loading="lazy" referrerpolicy="no-referrer" alt="Cocolife" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Cocolife</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/etiqa.png" loading="lazy" referrerpolicy="no-referrer" alt="Etiqa" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Etiqa</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/medasia-avega.png" loading="lazy" referrerpolicy="no-referrer" alt="MedAsia AVEGA" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">MedAsia AVEGA</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/generali.png" loading="lazy" referrerpolicy="no-referrer" alt="Generali" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Generali</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/amaphil.png" loading="lazy" referrerpolicy="no-referrer" alt="Amaphil" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">Amaphil</span></div>
+      <div class="hmo-logo-card"><img src="assets/hmo-google/philhealth.png" loading="lazy" referrerpolicy="no-referrer" alt="PhilHealth" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">PhilHealth</span></div>
+      <div class="hmo-logo-card"><img class="logo-icare" src="assets/hmo-google/icare.png" loading="lazy" referrerpolicy="no-referrer" alt="iCare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">iCare</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div class="contact-section" id="contact">
+  <div class="contact-left">
+    <div class="eyebrow"><div class="eyebrow-line"></div><div class="eyebrow-text" style="color:var(--cyan);">Reach Us</div></div>
+    <h2 class="section-title on-dark" style="margin-bottom:0.5rem;">Get in <em>Touch</em></h2>
+    <p style="font-size:0.86rem;color:rgba(255,255,255,0.4);margin-bottom:2.5rem;line-height:1.65;">We're here to help with appointments, inquiries, and corporate packages.</p>
+    <div class="ci-info">
+      <div><div class="ci-label">Address</div><div class="ci-val">4F Northridge Plaza<br>Quezon City, Philippines</div></div>
+      <div class="ci-map-wrap">
+        <iframe
+          class="ci-map"
+          title="DRMed Clinic & Laboratory Google Map Pin"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps?q=4%2FF%20DRMED%20Clinic%20%26%20Laboratory%2C%20Northridge%20Plaza%2C%20Congressional%20Avenue%2C%20Quezon%20City&output=embed">
+        </iframe>
+        <div class="ci-map-actions">
+          <span class="ci-map-note">Pin: Northridge Plaza, Congressional Avenue, Quezon City</span>
+          <a
+            class="ci-map-link"
+            href="https://www.google.com/maps/search/?api=1&query=4%2FF%20DRMED%20Clinic%20%26%20Laboratory%2C%20Northridge%20Plaza%2C%20Congressional%20Avenue%2C%20Quezon%20City"
+            target="_blank"
+            rel="noopener">
+            Open in Maps ↗
+          </a>
+        </div>
+      </div>
+      <div><div class="ci-label">Clinic Hours</div><div class="ci-val">Monday – Saturday<br>8:00 AM – 5:00 PM</div></div>
+      <div><div class="ci-label">Phone</div><div class="ci-val"><a href="tel:09166043208">0916 604 3208</a></div></div>
+      <div><div class="ci-label">Connect With Us</div><div class="ci-val"><a href="https://www.facebook.com/drmedcliniclab" target="_blank">📘 DRMed Clinic & Lab on Facebook</a><br><a href="https://instagram.com/drmed.ph" target="_blank" style="color:rgba(255,255,255,0.4);">📷 @drmed.ph on Instagram</a></div></div>
+    </div>
+  </div>
+  <div class="contact-right">
+    <div>
+      <div class="eyebrow"><div class="eyebrow-line"></div><div class="eyebrow-text" style="color:var(--cyan);">Inquire / Book</div></div>
+      <h3 style="font-family:'Montserrat',sans-serif;font-size:1.5rem;font-weight:800;color:var(--white);margin-bottom:0.3rem;">Send us a Message</h3>
+      <p style="font-size:0.78rem;color:rgba(255,255,255,0.35);">For appointments, corporate packages, or general inquiries.</p>
+    </div>
+    <div>
+      <div class="cf-row">
+        <div class="cf-group"><label class="cf-label">First Name</label><input type="text" class="cf-input" placeholder="Juan" /></div>
+        <div class="cf-group"><label class="cf-label">Last Name</label><input type="text" class="cf-input" placeholder="Dela Cruz" /></div>
+      </div>
+      <div class="cf-group"><label class="cf-label">Email Address</label><input type="email" class="cf-input" placeholder="juan@email.com" /></div>
+      <div class="cf-group">
+        <label class="cf-label">Inquiry Type</label>
+        <select class="cf-input">
+          <option value="">Select type</option>
+          <option>Book an Appointment</option>
+          <option>Basic Package Inquiry</option>
+          <option>Executive Package Inquiry</option>
+          <option>HMO / Cashless Query</option>
+          <option>Corporate / Group Package</option>
+          <option>Home Service Request</option>
+          <option>Patient Portal Access</option>
+        </select>
+      </div>
+      <div class="cf-group"><label class="cf-label">Message</label><textarea class="cf-input" rows="4" placeholder="Tell us how we can help..."></textarea></div>
+      <button class="btn-send">Send Message →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <img src="DRMED LOGO.png" alt="DRMed Healthcare Inc." onerror="this.src='assets/drmed-cdn/wh_edc23af8-cad1-472d-a472-a8c26f1cd5fe.png'; this.onerror=null;" />
+  </div>
+  <div class="footer-copy">© 2026 DRMed Healthcare Inc. · All rights reserved · Quezon City, PH</div>
+  <ul class="footer-links">
+    <li><a href="privacy-notice.html" target="_blank" rel="noopener noreferrer">Data Privacy Notice</a></li>
+    <li><a href="terms-of-use.html" target="_blank" rel="noopener noreferrer">Terms of Use</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</footer>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+<script>
+  // Patient portal backend
+  // Optional: set in <head> or before this script:
+  // window.__DRMED_TURNSTILE_SITE_KEY__ = 'YOUR_SITE_KEY';
+  const portalApiBase = window.__DRMED_API_BASE__ || (
+    (/^(localhost|127\.0\.0\.1)$/.test(window.location.hostname) || window.location.protocol === 'file:')
+      ? 'http://localhost:8080'
+      : 'https://api.drmed.ph'
+  );
+  const portalVerifyURL = portalApiBase + '/api/portal/verify';
+  const portalReportURL = portalApiBase + '/api/portal/report';
+  const consentNoticeVersion = window.__DRMED_POLICY_VERSION__ || '2026-02-24';
+  const turnstileSiteKey = window.__DRMED_TURNSTILE_SITE_KEY__ || '';
+  const turnstileEnabled = !!turnstileSiteKey && turnstileSiteKey !== 'YOUR_TURNSTILE_SITE_KEY';
+  let portalCaptchaToken = '';
+  let portalTurnstileWidgetId = null;
+  let portalAccessToken = '';
+
+  function hasPortalConsentAccepted() {
+    const consent = document.getElementById('modalPortalConsent');
+    return !!(consent && consent.checked);
+  }
+
+  function ensurePortalCaptcha() {
+    const shell = document.getElementById('modalPortalCaptchaShell');
+    const mount = document.getElementById('modalPortalCaptcha');
+    if (!shell || !mount) return;
+
+    if (!turnstileEnabled) {
+      shell.classList.add('disabled');
+      shell.textContent = 'CAPTCHA is not configured yet. Set window.__DRMED_TURNSTILE_SITE_KEY__ to enable bot protection.';
+      portalCaptchaToken = '';
+      return;
+    }
+
+    if (portalTurnstileWidgetId !== null) return;
+    if (!window.turnstile || typeof window.turnstile.render !== 'function') {
+      window.setTimeout(ensurePortalCaptcha, 150);
+      return;
+    }
+
+    portalTurnstileWidgetId = window.turnstile.render(mount, {
+      sitekey: turnstileSiteKey,
+      callback: function(token) { portalCaptchaToken = safeText(token, ''); },
+      'expired-callback': function() { portalCaptchaToken = ''; },
+      'error-callback': function() { portalCaptchaToken = ''; }
+    });
+  }
+
+  function resetPortalCaptcha() {
+    portalCaptchaToken = '';
+    if (!turnstileEnabled) return;
+    if (window.turnstile && portalTurnstileWidgetId !== null) {
+      window.turnstile.reset(portalTurnstileWidgetId);
+      return;
+    }
+    ensurePortalCaptcha();
+  }
+
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    ensurePortalCaptcha();
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+    showLogin();
+  }
+
+  function showResults() {
+    document.getElementById('loginView').style.display = 'none';
+    document.getElementById('resultsView').style.display = 'block';
+  }
+
+  function showLogin() {
+    document.getElementById('loginView').style.display = 'block';
+    document.getElementById('resultsView').style.display = 'none';
+    clearPortalMessage();
+    setPortalBusy(false);
+    resetPortalCaptcha();
+    portalAccessToken = '';
+  }
+
+  function setPortalBusy(isBusy) {
+    const btn = document.getElementById('modalPortalSubmit');
+    if (!btn) return;
+    if (!btn.dataset.label) btn.dataset.label = btn.textContent.trim();
+    btn.disabled = !!isBusy;
+    btn.textContent = isBusy ? 'Checking...' : btn.dataset.label;
+  }
+
+  function setPortalMessage(message, kind) {
+    const box = document.getElementById('portalMessage');
+    if (!box) return;
+    box.className = 'portal-message ' + (kind || 'error');
+    box.textContent = message || '';
+    box.style.display = message ? 'block' : 'none';
+  }
+
+  function clearPortalMessage() {
+    const box = document.getElementById('portalMessage');
+    if (!box) return;
+    box.textContent = '';
+    box.className = 'portal-message';
+    box.style.display = 'none';
+  }
+
+  function safeText(value, fallback) {
+    const out = value === undefined || value === null ? '' : String(value).trim();
+    return out || (fallback || '');
+  }
+
+  function formatReportDate(value) {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return safeText(value, 'N/A');
+    return d.toLocaleString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+  }
+
+  function formatTestDate(value) {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return safeText(value, 'N/A');
+    return d.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  }
+
+  function buildReportUrl(fileId) {
+    if (!portalAccessToken) return '';
+    let url = portalReportURL + '?accessToken=' + encodeURIComponent(portalAccessToken);
+    if (fileId) url += '&fileId=' + encodeURIComponent(fileId);
+    return url;
+  }
+
+  async function downloadPortalReport(fileId, fallbackName, triggerEl) {
+    const url = buildReportUrl(fileId) + '&download=1';
+    if (!url) {
+      setPortalMessage('Session expired. Please sign in again.', 'error');
+      return;
+    }
+
+    const btn = triggerEl || null;
+    const originalLabel = btn ? btn.textContent : '';
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Downloading...';
+    }
+
+    try {
+      const response = await fetch(url, { method: 'GET' });
+      if (!response.ok) throw new Error('Unable to download this result right now.');
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = safeText(fallbackName, 'lab-result.pdf');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(objectUrl);
+      clearPortalMessage();
+    } catch (err) {
+      setPortalMessage(safeText(err.message, 'Download failed. Please try again.'), 'error');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = originalLabel || 'Download';
+      }
+    }
+  }
+
+  function getInitials(name) {
+    const parts = safeText(name, 'Patient').split(/\s+/).filter(Boolean);
+    if (!parts.length) return 'PT';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  function renderPortalResults(userId, patientName, reports) {
+    const rows = Array.isArray(reports) ? reports.slice() : [];
+    rows.sort((a, b) => {
+      const aTs = new Date(a.releasedAt || a.testDate || '').getTime();
+      const bTs = new Date(b.releasedAt || b.testDate || '').getTime();
+      const aSafe = Number.isFinite(aTs) ? aTs : 0;
+      const bSafe = Number.isFinite(bTs) ? bTs : 0;
+      return bSafe - aSafe;
+    });
+
+    document.getElementById('portalPatientName').textContent = safeText(patientName, 'Patient');
+    document.getElementById('portalPatientInitials').textContent = getInitials(patientName);
+
+    document.getElementById('portalPatientMeta').textContent = safeText(userId, 'Patient User ID');
+
+    const body = document.getElementById('portalResultsBody');
+    body.innerHTML = '';
+
+    if (!rows.length) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td colspan="6" style="color:var(--text-soft);font-size:0.72rem;">No reports found for this account yet.</td>';
+      body.appendChild(tr);
+      return;
+    }
+
+    rows.forEach((report) => {
+      const controlNumber = safeText(report.controlNumber, '--');
+      const testName = safeText(report.testName, 'Laboratory Test');
+      const statusRaw = safeText(report.testStatus, 'Pending');
+      const link = safeText(report.pdfLink, '');
+      const fileId = safeText(report.fileId, '');
+      const fileName = safeText(report.fileName, '');
+      const pending = statusRaw.toLowerCase().includes('pending') || !link;
+
+      const tr = document.createElement('tr');
+
+      const tdVisit = document.createElement('td');
+      tdVisit.textContent = controlNumber;
+
+      const tdTest = document.createElement('td');
+      tdTest.textContent = testName;
+
+      const tdTestDate = document.createElement('td');
+      tdTestDate.textContent = formatTestDate(report.testDate);
+
+      const tdReleased = document.createElement('td');
+      tdReleased.textContent = formatReportDate(report.releasedAt);
+
+      const tdStatus = document.createElement('td');
+      const status = document.createElement('span');
+      status.className = 's-pill ' + (pending ? 's-pending' : 's-normal');
+      status.textContent = pending ? 'Pending' : statusRaw;
+      tdStatus.appendChild(status);
+
+      const tdAction = document.createElement('td');
+      if (pending) {
+        tdAction.textContent = '--';
+        tdAction.style.color = 'var(--text-soft)';
+      } else {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'res-action-link';
+        btn.textContent = 'Download';
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', function() {
+          const fallbackName = safeText(fileName, (safeText(controlNumber, 'result') + '-' + safeText(testName, 'test') + '.pdf'));
+          downloadPortalReport(fileId, fallbackName, btn);
+        });
+        tdAction.appendChild(btn);
+      }
+
+      tr.appendChild(tdVisit);
+      tr.appendChild(tdTest);
+      tr.appendChild(tdTestDate);
+      tr.appendChild(tdReleased);
+      tr.appendChild(tdStatus);
+      tr.appendChild(tdAction);
+      body.appendChild(tr);
+    });
+  }
+
+  async function validatePortalLogin() {
+    const userId = safeText(document.getElementById('modalPortalControl').value, '');
+    const pin = safeText(document.getElementById('modalPortalPin').value, '');
+    const consentAccepted = hasPortalConsentAccepted();
+
+    clearPortalMessage();
+    if (!userId || !pin) {
+      setPortalMessage('Please enter both Patient User ID and Secure PIN / Claim Password.', 'error');
+      return;
+    }
+    if (!consentAccepted) {
+      setPortalMessage('Please confirm that you have read and accepted the Terms of Use and Data Privacy Notice.', 'error');
+      return;
+    }
+    if (turnstileEnabled && !portalCaptchaToken) {
+      setPortalMessage('Please complete the CAPTCHA first.', 'error');
+      return;
+    }
+
+    setPortalBusy(true);
+    try {
+      const payload = {
+        userId,
+        pin,
+        consentAccepted,
+        consentVersion: consentNoticeVersion
+      };
+      if (turnstileEnabled) payload.captchaToken = portalCaptchaToken;
+
+      const response = await fetch(portalVerifyURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.status === 'success') {
+          portalAccessToken = safeText(data.accessToken, '');
+          const accountUserId = safeText(data.userId, userId);
+          const sheetReports = Array.isArray(data.reports) ? data.reports.slice() : [];
+
+          if (sheetReports.length) {
+            const reports = sheetReports.map((report) => {
+              const fileId = safeText(report.fileId, '');
+              const rawStatus = safeText(report.testStatus, '');
+              const status = rawStatus || (safeText(report.releasedAt, '') ? 'Released' : 'Pending');
+              return {
+                controlNumber: safeText(report.controlNumber, ''),
+                testName: safeText(report.testName, 'Laboratory Test'),
+                testDate: safeText(report.testDate, ''),
+                releasedAt: safeText(report.releasedAt, ''),
+                testStatus: status,
+                fileId,
+                fileName: safeText(report.fileName, ''),
+                pdfLink: fileId ? buildReportUrl(fileId) : ''
+              };
+            });
+            renderPortalResults(accountUserId, data.name, reports);
+            showResults();
+            return;
+          }
+
+          const files = Array.isArray(data.files) ? data.files.slice() : [];
+          const reports = files.length
+            ? files.map((file) => ({
+                controlNumber: '',
+                testName: safeText(file.name, 'Laboratory Result'),
+                testDate: '',
+                releasedAt: safeText(file.modifiedTime, ''),
+                testStatus: 'Ready',
+                fileId: safeText(file.id, ''),
+                fileName: safeText(file.name, ''),
+                pdfLink: buildReportUrl(file.id)
+              }))
+            : [{
+                controlNumber: '',
+                testName: safeText(data.pdfFileName, 'Laboratory Result'),
+                testDate: '',
+                releasedAt: '',
+                testStatus: data.hasPdf ? 'Ready' : 'Pending',
+                fileId: '',
+                fileName: safeText(data.pdfFileName, ''),
+                pdfLink: data.hasPdf ? buildReportUrl() : ''
+              }];
+          renderPortalResults(accountUserId, data.name, reports);
+          showResults();
+          return;
+        }
+      }
+
+      if (response.status === 401) {
+        setPortalMessage('Invalid credentials. Please verify your Patient User ID and Secure PIN / Claim Password.', 'error');
+      } else if (response.status === 400) {
+        const data = await response.json().catch(() => ({}));
+        setPortalMessage(safeText(data.message, 'Please complete consent and CAPTCHA before continuing.'), 'error');
+      } else {
+        setPortalMessage('Connection error. Please check your internet and try again.', 'error');
+      }
+      resetPortalCaptcha();
+    } catch (err) {
+      setPortalMessage('Connection error. Please check your internet and try again.', 'error');
+      resetPortalCaptcha();
+    } finally {
+      setPortalBusy(false);
+    }
+  }
+
+  function portalOpenFromSection() {
+    openModal();
+    const inlineControl = document.getElementById('inlinePortalControl');
+    const inlinePin = document.getElementById('inlinePortalPin');
+    const modalControl = document.getElementById('modalPortalControl');
+    const modalPin = document.getElementById('modalPortalPin');
+
+    if (inlineControl && modalControl) modalControl.value = inlineControl.value.trim();
+    if (inlinePin && modalPin) modalPin.value = inlinePin.value.trim();
+    ensurePortalCaptcha();
+
+    if (!modalControl.value) modalControl.focus();
+    else if (!modalPin.value) modalPin.focus();
+    else {
+      setPortalMessage('Please review Terms/Data Privacy and complete CAPTCHA to continue.', 'info');
+      const consent = document.getElementById('modalPortalConsent');
+      if (consent) consent.focus();
+    }
+  }
+
+  document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.getElementById('modal').classList.contains('open')) closeModal();
+  });
+  document.getElementById('modalPortalControl').addEventListener('keydown', function(e) { if (e.key === 'Enter') validatePortalLogin(); });
+  document.getElementById('modalPortalPin').addEventListener('keydown', function(e) { if (e.key === 'Enter') validatePortalLogin(); });
+
+  // Mobile menu
+  function openMobile() { document.getElementById('mobileOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+  function closeMobile() { document.getElementById('mobileOverlay').classList.remove('open'); document.body.style.overflow=''; }
+
+  // Nav scroll
+  const mainNav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => { mainNav.classList.toggle('scrolled', window.scrollY > 60); }, { passive: true });
+
+  // Fade-in observer
+  const fadeEls = document.querySelectorAll('.fade-in');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  fadeEls.forEach(el => io.observe(el));
+
+</script>
+</body>
+</html>
