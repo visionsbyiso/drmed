@@ -1488,7 +1488,16 @@ app.use(
 );
 
 app.get('/healthz', (_req, res) => {
-  res.json({ status: 'ok', service: 'drmed-portal-backend', time: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    service: 'drmed-portal-backend',
+    time: new Date().toISOString(),
+    resultStorage: RESULT_STORAGE,
+    driveAuthMode: USE_LOCAL_STORAGE ? 'none' : DRIVE_AUTH_MODE,
+    driveOAuthConfigured: USE_DRIVE_OAUTH_USER
+      ? !!(GOOGLE_OAUTH_CLIENT_ID && GOOGLE_OAUTH_CLIENT_SECRET && GOOGLE_OAUTH_REFRESH_TOKEN)
+      : false
+  });
 });
 
 app.post('/api/staff/auth/login', async (req, res) => {
