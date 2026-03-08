@@ -397,6 +397,9 @@
     function defaultApiBase() {
       const host = window.location.hostname || '';
       if (window.location.protocol === 'file:' || host === 'localhost' || host === '127.0.0.1') return 'http://localhost:8080';
+      if (host === 'drmed.visionsbyiso.com') return 'https://api.drmed.visionsbyiso.com';
+      if (host === 'drmed.ph' || host === 'www.drmed.ph') return 'https://api.drmed.ph';
+      if (!host.startsWith('api.') && host.includes('.')) return 'https://api.' + host;
       return window.location.origin;
     }
 
@@ -593,9 +596,13 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ staffUser, password })
         });
-        const data = await res.json().catch(() => ({}));
+        const raw = await res.text();
+        let data = {};
+        try { data = JSON.parse(raw); } catch (_err) { data = {}; }
         if (!res.ok) {
-          throw new Error(text(data.message, 'Gate login failed.'));
+          const fallback = 'Gate login failed (' + res.status + ').';
+          const tail = raw && !data.message ? ' ' + String(raw).slice(0, 140) : '';
+          throw new Error(text(data.message, fallback + tail));
         }
 
         session.staffSessionToken = text(data.staffSessionToken, '');
