@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: drmed-portal-backend
+    runtime: node
+    rootDir: backend-node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: SHEET_ID
+        sync: false
+      - key: SHEET_NAME
+        value: Sheet1
+      - key: DRIVE_FOLDER_ID
+        sync: false
+      - key: ALLOWED_ORIGIN
+        sync: false
+      - key: ENABLE_CONSENT_AUDIT_LOG
+        value: "true"
+      - key: CONSENT_LOG_TO_SHEETS
+        value: "true"
+      - key: CONSENT_LOG_SHEET_NAME
+        value: ConsentLogs
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false

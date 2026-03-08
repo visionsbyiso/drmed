@@ -1,0 +1,5 @@
+Vendor,Service,Data Access Level,Contract/DPA Signed,Effective Date,Expiry Date,Security Review Date,Owner,Status
+Render,Backend hosting and runtime deployment,"Potential access to infrastructure metadata and server logs",No,[TO FILL],[TO FILL],[TO FILL],IT,Pending legal review
+Google Workspace (Sheets/Drive),Patient data storage and report delivery,"Patient records, consent logs, and result PDFs",No,[TO FILL],[TO FILL],[TO FILL],DPO + IT,Pending legal review
+Cloudflare Turnstile,CAPTCHA anti-bot verification,"Limited request metadata and anti-bot token validation",No,[TO FILL],[TO FILL],[TO FILL],IT,Pending legal review
+GitHub,Source code hosting and deployment pipeline,"Potential exposure to configuration data if misconfigured",No,[TO FILL],[TO FILL],[TO FILL],IT,Pending legal review
