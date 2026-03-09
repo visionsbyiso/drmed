@@ -1058,11 +1058,18 @@
   // Patient portal backend
   // Optional: set in <head> or before this script:
   // window.__DRMED_TURNSTILE_SITE_KEY__ = 'YOUR_SITE_KEY';
-  const portalApiBase = window.__DRMED_API_BASE__ || (
-    (/^(localhost|127\.0\.0\.1)$/.test(window.location.hostname) || window.location.protocol === 'file:')
-      ? 'http://localhost:8080'
-      : 'https://api.drmed.ph'
-  );
+  function resolvePortalApiBase() {
+    if (window.__DRMED_API_BASE__) {
+      return String(window.__DRMED_API_BASE__).replace(/\/$/, '');
+    }
+    const host = String(window.location.hostname || '').toLowerCase();
+    const isLocal = /^(localhost|127\.0\.0\.1)$/.test(host) || window.location.protocol === 'file:';
+    if (isLocal) return 'http://localhost:8080';
+    if (host === 'drmed.visionsbyiso.com' || host === 'www.drmed.visionsbyiso.com') return 'https://api.drmed.visionsbyiso.com';
+    if (host === 'drmed.ph' || host === 'www.drmed.ph') return 'https://api.drmed.ph';
+    return 'https://api.drmed.visionsbyiso.com';
+  }
+  const portalApiBase = resolvePortalApiBase();
   const portalVerifyURL = portalApiBase + '/api/portal/verify';
   const portalReportURL = portalApiBase + '/api/portal/report';
   const consentNoticeVersion = window.__DRMED_POLICY_VERSION__ || '2026-02-24';
@@ -1197,6 +1204,16 @@
     return url;
   }
 
+  async function fetchWithTimeout(url, options, timeoutMs) {
+    const controller = new AbortController();
+    const timer = setTimeout(function() { controller.abort(); }, timeoutMs || 25000);
+    try {
+      return await fetch(url, Object.assign({}, options || {}, { signal: controller.signal }));
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   async function downloadPortalReport(fileId, fallbackName, triggerEl) {
     const url = buildReportUrl(fileId) + '&download=1';
     if (!url) {
@@ -1212,7 +1229,7 @@
     }
 
     try {
-      const response = await fetch(url, { method: 'GET' });
+      const response = await fetchWithTimeout(url, { method: 'GET' }, 45000);
       if (!response.ok) throw new Error('Unable to download this result right now.');
       const blob = await response.blob();
       const objectUrl = URL.createObjectURL(blob);
@@ -1225,7 +1242,11 @@
       URL.revokeObjectURL(objectUrl);
       clearPortalMessage();
     } catch (err) {
-      setPortalMessage(safeText(err.message, 'Download failed. Please try again.'), 'error');
+      if (err && err.name === 'AbortError') {
+        setPortalMessage('Download timed out. Please try again.', 'error');
+      } else {
+        setPortalMessage(safeText(err.message, 'Download failed. Please try again.'), 'error');
+      }
     } finally {
       if (btn) {
         btn.disabled = false;
@@ -1351,11 +1372,11 @@
       };
       if (turnstileEnabled) payload.captchaToken = portalCaptchaToken;
 
-      const response = await fetch(portalVerifyURL, {
+      const response = await fetchWithTimeout(portalVerifyURL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      });
+      }, 25000);
 
       if (response.ok) {
         const data = await response.json();
@@ -1419,11 +1440,16 @@
         const data = await response.json().catch(() => ({}));
         setPortalMessage(safeText(data.message, 'Please complete consent and CAPTCHA before continuing.'), 'error');
       } else {
-        setPortalMessage('Connection error. Please check your internet and try again.', 'error');
+        const data = await response.json().catch(() => ({}));
+        setPortalMessage(safeText(data.message, 'Unable to verify credentials right now. Please try again.'), 'error');
       }
       resetPortalCaptcha();
     } catch (err) {
-      setPortalMessage('Connection error. Please check your internet and try again.', 'error');
+      if (err && err.name === 'AbortError') {
+        setPortalMessage('Request timed out. Please try again in a few seconds.', 'error');
+      } else {
+        setPortalMessage('Connection error. Please check your internet and try again.', 'error');
+      }
       resetPortalCaptcha();
     } finally {
       setPortalBusy(false);
