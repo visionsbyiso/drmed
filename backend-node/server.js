@@ -22,7 +22,7 @@ const STRICT_SECURITY_MODE = (() => {
 
 const parsedPort = Number(process.env.PORT);
 const PORT = Number.isFinite(parsedPort) && parsedPort > 0 ? Math.floor(parsedPort) : 8080;
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://drmed.ph';
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://drmed.ph,https://www.drmed.ph,https://drmed.visionsbyiso.com,https://www.drmed.visionsbyiso.com';
 const SHEET_ID = process.env.SHEET_ID || '1O09S6_hRv-c7irI_HJtbYraWSXQs08IET0-bqQIWQh4';
 const SHEET_NAME = process.env.SHEET_NAME || 'Sheet1';
 const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '';
