@@ -3,11 +3,24 @@
 This is a practical baseline checklist for production deployment.  
 Legal compliance still requires review by your Data Protection Officer (DPO)/legal counsel.
 
+## 0) Data inventory (fill these in)
+
+- [ ] Estimated patients/month: __________
+- [ ] Average tests per patient: __________
+- [ ] Retention period for results (months/years): __________
+- [ ] Storage locations:
+  - Google Sheets (patient metadata + status)
+  - Google Drive (PDF results) OR local encrypted storage
+  - Audit logs (consent + staff actions)
+- [ ] Authorized roles with access: __________
+
 ## 1) Access control
 
 - [ ] Backend is private (no directory listing, no file manager exposed).
-- [ ] `ALLOWED_ORIGIN` contains only `https://drmed.ph,https://www.drmed.ph`.
+- [ ] `ALLOWED_ORIGIN` contains only approved public domains (no localhost).
 - [ ] Staff access uses `/api/staff/auth/login` with user/password.
+- [ ] Staff passwords are hashed (scrypt) in `STAFF_GATE_USERS_JSON`.
+- [ ] MFA is enabled for staff (`STAFF_MFA_REQUIRED=true` + secrets).
 - [ ] Staff credentials are rotated on schedule (e.g., every 90 days).
 - [ ] Service account has least privilege (Sheet editor only for required file; no public sharing).
 
@@ -19,11 +32,12 @@ Legal compliance still requires review by your Data Protection Officer (DPO)/leg
 - [ ] Portal token TTL is short (`PORTAL_ACCESS_TOKEN_TTL_SECONDS=900`).
 - [ ] Staff session TTL is limited (`STAFF_SESSION_TTL_SECONDS=28800` or lower).
 - [ ] Rate limiting is active (already configured in backend).
+- [ ] Staff lockout enabled (`STAFF_LOCKOUT_MAX_ATTEMPTS`, `STAFF_LOCKOUT_DURATION_MS`).
 
 ## 3) Data protection
 
 - [ ] All traffic is HTTPS only for `drmed.ph` and `api.drmed.ph`.
-- [ ] Result storage uses persistent encrypted disk (`LOCAL_RESULTS_DIR` on encrypted volume).
+- [ ] Result storage uses private Google Drive folder (recommended) or encrypted local disk.
 - [ ] Server backups are encrypted and access-restricted.
 - [ ] Sensitive secrets are set only in backend host env vars (never in frontend).
 - [ ] No service-account key committed to GitHub.
@@ -33,7 +47,8 @@ Legal compliance still requires review by your Data Protection Officer (DPO)/leg
 - [ ] `ENABLE_CONSENT_AUDIT_LOG=true`.
 - [ ] `CONSENT_LOG_TO_SHEETS=true` and sheet `ConsentLogs` exists.
 - [ ] `ENABLE_STAFF_AUDIT_LOG=true`.
-- [ ] Logs are retained under policy and access-limited to authorized personnel.
+- [ ] Logs have retention controls (`AUDIT_LOG_MAX_BYTES`, `AUDIT_LOG_MAX_DAYS`).
+- [ ] Logs are access-limited to authorized personnel.
 - [ ] Incident logbook process exists (who, when, what, action taken).
 
 ## 5) Privacy notice + consent transparency
@@ -49,6 +64,7 @@ Legal compliance still requires review by your Data Protection Officer (DPO)/leg
 - [ ] Disposal/deletion process is documented and tested.
 - [ ] Procedure exists for data subject rights requests (access/correction/deletion where applicable).
 - [ ] Procedure exists for breach response and notification timelines.
+- [ ] Data processing registration or sworn declaration completed (if required by NPC thresholds).
 
 ## 7) Deployment hardening
 

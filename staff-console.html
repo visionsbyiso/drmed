@@ -235,10 +235,14 @@
             <input id="gateStaffUser" type="text" placeholder="frontdesk-1" />
           </div>
         </div>
-        <div class="row">
+        <div class="row-3">
           <div>
             <label for="gateKey">Password</label>
             <input id="gateKey" type="password" autocomplete="off" placeholder="Staff password" />
+          </div>
+          <div>
+            <label for="gateMfa">MFA Code (If Enabled)</label>
+            <input id="gateMfa" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" />
           </div>
           <div>
             <label for="gateTips">Gate Notes</label>
@@ -574,6 +578,7 @@
       const apiBase = text(document.getElementById('gateApiBase').value, defaultApiBase()).replace(/\/$/, '');
       const staffUser = text(document.getElementById('gateStaffUser').value, '');
       const password = text(document.getElementById('gateKey').value, '');
+      const mfa = text(document.getElementById('gateMfa').value, '');
 
       if (!apiBase || !staffUser) {
         setStatus('gateStatus', 'Backend URL and staff user are required.', 'bad');
@@ -591,10 +596,12 @@
       }
 
       try {
+        const payload = { staffUser, password };
+        if (mfa) payload.mfa = mfa;
         const res = await fetch(apiBase + '/api/staff/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ staffUser, password })
+          body: JSON.stringify(payload)
         });
         const raw = await res.text();
         let data = {};
@@ -612,6 +619,7 @@
         setStatus('gateStatus', 'Gate unlocked. Session active until ' + text(session.staffSessionExpiry, 'expiry unknown') + '.', 'good');
         setLocked(false, 'Console unlocked.', 'good');
         document.getElementById('gateKey').value = '';
+        document.getElementById('gateMfa').value = '';
       } catch (err) {
         setStatus('gateStatus', text(err.message, 'Gate login failed.'), 'bad');
       }

@@ -41,11 +41,19 @@ const STAFF_GATE_USERS = parseStaffGateUsers(process.env.STAFF_GATE_USERS_JSON |
 const ENABLE_STAFF_SESSION_GATE = STAFF_GATE_USERS.size > 0;
 const ENABLE_STAFF_UPLOAD = ENABLE_STAFF_SESSION_GATE;
 const STAFF_SESSION_TOKEN_SECRET = process.env.STAFF_SESSION_TOKEN_SECRET || '';
+const STAFF_LOCKOUT_MAX_ATTEMPTS = Number(process.env.STAFF_LOCKOUT_MAX_ATTEMPTS || 5);
+const STAFF_LOCKOUT_WINDOW_MS = Number(process.env.STAFF_LOCKOUT_WINDOW_MS || 15 * 60 * 1000);
+const STAFF_LOCKOUT_DURATION_MS = Number(process.env.STAFF_LOCKOUT_DURATION_MS || 15 * 60 * 1000);
+const STAFF_LOCKOUT_SCOPE = String(process.env.STAFF_LOCKOUT_SCOPE || 'user_ip').trim().toLowerCase();
+const STAFF_MFA_REQUIRED = String(process.env.STAFF_MFA_REQUIRED || 'false').toLowerCase() === 'true';
+const STAFF_MFA_SECRETS = parseMfaSecrets(process.env.STAFF_MFA_SECRETS_JSON || '');
 const STAFF_SESSION_TTL_SECONDS = Number(process.env.STAFF_SESSION_TTL_SECONDS || 12 * 60 * 60);
 const MAX_STAFF_PDF_BYTES = Number(process.env.MAX_STAFF_PDF_BYTES || 12 * 1024 * 1024);
 const MAX_STAFF_BULK_ITEMS = Number(process.env.MAX_STAFF_BULK_ITEMS || 25);
 const STAFF_AUDIT_LOG_FILE = process.env.STAFF_AUDIT_LOG_FILE || path.join(__dirname, 'logs', 'staff-audit.ndjson');
 const ENABLE_STAFF_AUDIT_LOG = String(process.env.ENABLE_STAFF_AUDIT_LOG || 'true').toLowerCase() !== 'false';
+const AUDIT_LOG_MAX_BYTES = Number(process.env.AUDIT_LOG_MAX_BYTES || 5 * 1024 * 1024);
+const AUDIT_LOG_MAX_DAYS = Number(process.env.AUDIT_LOG_MAX_DAYS || 30);
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
 const TURNSTILE_VERIFY_URL = process.env.TURNSTILE_VERIFY_URL || 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const REQUIRE_PORTAL_CONSENT = String(process.env.REQUIRE_PORTAL_CONSENT || 'true').toLowerCase() !== 'false';
@@ -281,17 +289,30 @@ function parseStaffGateUsers(raw) {
     const parsed = JSON.parse(input);
     if (Array.isArray(parsed)) {
       for (const item of parsed) {
+        if (typeof item === 'string') {
+          const parts = item.split(':');
+          if (parts.length >= 2) {
+            const user = normalizeStaffUser(parts.shift());
+            const password = parts.join(':').trim();
+            if (user && password) out.set(user, buildStaffUserConfig({ user, password }));
+          }
+          continue;
+        }
         const user = normalizeStaffUser(item && (item.user || item.staffUser || item.username));
-        const password = String(item && (item.password || item.passcode || '') || '').trim();
-        if (user && password) out.set(user, password);
+        if (!user) continue;
+        out.set(user, buildStaffUserConfig(Object.assign({ user }, item)));
       }
       return out;
     }
     if (parsed && typeof parsed === 'object') {
       for (const [key, value] of Object.entries(parsed)) {
         const user = normalizeStaffUser(key);
-        const password = String(value || '').trim();
-        if (user && password) out.set(user, password);
+        if (!user) continue;
+        if (value && typeof value === 'object') {
+          out.set(user, buildStaffUserConfig(Object.assign({ user }, value)));
+        } else {
+          out.set(user, buildStaffUserConfig({ user, password: String(value || '').trim() }));
+        }
       }
       return out;
     }
@@ -301,6 +322,218 @@ function parseStaffGateUsers(raw) {
   }
 
   return out;
+}
+
+function parseMfaSecrets(raw) {
+  const input = String(raw || '').trim();
+  const out = new Map();
+  if (!input) return out;
+  try {
+    const parsed = JSON.parse(input);
+    if (Array.isArray(parsed)) {
+      for (const item of parsed) {
+        const user = normalizeStaffUser(item && (item.user || item.staffUser || item.username));
+        const secret = String(item && (item.secret || item.mfaSecret || '') || '').trim();
+        if (user && secret) out.set(user, secret);
+      }
+      return out;
+    }
+    if (parsed && typeof parsed === 'object') {
+      for (const [key, value] of Object.entries(parsed)) {
+        const user = normalizeStaffUser(key);
+        const secret = String(value || '').trim();
+        if (user && secret) out.set(user, secret);
+      }
+      return out;
+    }
+  } catch (err) {
+    console.warn('[WARN] STAFF_MFA_SECRETS_JSON is invalid JSON. MFA secrets will be ignored.');
+  }
+  return out;
+}
+
+function buildStaffUserConfig(entry) {
+  const config = {
+    user: normalizeStaffUser(entry && (entry.user || entry.staffUser || entry.username)),
+    password: '',
+    passwordHash: '',
+    mfaSecret: '',
+    mfaRequired: false
+  };
+
+  if (!entry) return config;
+  const rawPassword = String(entry.password || entry.passcode || '').trim();
+  const rawHash = String(entry.passwordHash || entry.hash || '').trim();
+  const secret = String(entry.mfaSecret || entry.mfa || entry.otpSecret || '').trim();
+  const mfaRequired = parseBoolean(entry.mfaRequired);
+
+  if (rawHash) {
+    config.passwordHash = rawHash;
+  } else if (rawPassword) {
+    if (isScryptHash(rawPassword)) {
+      config.passwordHash = rawPassword;
+    } else {
+      config.password = rawPassword;
+    }
+  }
+
+  if (secret) config.mfaSecret = secret;
+  if (mfaRequired) config.mfaRequired = true;
+  return config;
+}
+
+function isScryptHash(value) {
+  return String(value || '').trim().toLowerCase().startsWith('scrypt$');
+}
+
+function parseScryptHash(raw) {
+  const value = String(raw || '').trim();
+  if (!isScryptHash(value)) return null;
+  const parts = value.split('$');
+  if (parts.length < 6) return null;
+  const N = Number(parts[1]);
+  const r = Number(parts[2]);
+  const p = Number(parts[3]);
+  const salt = Buffer.from(parts[4], 'base64');
+  const key = Buffer.from(parts[5], 'base64');
+  if (!Number.isFinite(N) || !Number.isFinite(r) || !Number.isFinite(p)) return null;
+  if (!salt.length || !key.length) return null;
+  return { N, r, p, salt, key };
+}
+
+function verifyScryptPassword(password, rawHash) {
+  const parsed = parseScryptHash(rawHash);
+  if (!parsed) return false;
+  try {
+    const derived = crypto.scryptSync(String(password || ''), parsed.salt, parsed.key.length, {
+      N: parsed.N,
+      r: parsed.r,
+      p: parsed.p
+    });
+    return timingSafeEquals(derived.toString('base64'), parsed.key.toString('base64'));
+  } catch (_err) {
+    return false;
+  }
+}
+
+function resolveStaffUserConfig(staffUser) {
+  const config = STAFF_GATE_USERS.get(staffUser) || null;
+  if (!config) return null;
+  const mfaSecret = pickFirst(config.mfaSecret, STAFF_MFA_SECRETS.get(staffUser));
+  const mfaRequired = STAFF_MFA_REQUIRED || !!config.mfaRequired || !!mfaSecret;
+  return Object.assign({}, config, { mfaSecret, mfaRequired });
+}
+
+function verifyStaffPassword(password, config) {
+  if (!config || !password) return false;
+  if (config.passwordHash) return verifyScryptPassword(password, config.passwordHash);
+  return timingSafeEquals(password, config.password || '');
+}
+
+function normalizeMfaCode(value) {
+  return String(value || '').replace(/\s+/g, '').trim();
+}
+
+function base32ToBuffer(input) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const normalized = String(input || '').toUpperCase().replace(/=+$/g, '').replace(/[^A-Z2-7]/g, '');
+  let bits = 0;
+  let value = 0;
+  const bytes = [];
+  for (const char of normalized) {
+    const idx = alphabet.indexOf(char);
+    if (idx < 0) continue;
+    value = (value << 5) | idx;
+    bits += 5;
+    if (bits >= 8) {
+      bytes.push((value >> (bits - 8)) & 0xff);
+      bits -= 8;
+    }
+  }
+  return Buffer.from(bytes);
+}
+
+function generateTotp(secret, timestampMs) {
+  const key = base32ToBuffer(secret);
+  if (!key.length) return '';
+  const step = 30;
+  const counter = Math.floor((timestampMs || Date.now()) / 1000 / step);
+  const buf = Buffer.alloc(8);
+  buf.writeUInt32BE(Math.floor(counter / 0x100000000), 0);
+  buf.writeUInt32BE(counter % 0x100000000, 4);
+  const hmac = crypto.createHmac('sha1', key).update(buf).digest();
+  const offset = hmac[hmac.length - 1] & 0xf;
+  const code = (hmac.readUInt32BE(offset) & 0x7fffffff) % 1000000;
+  return String(code).padStart(6, '0');
+}
+
+function verifyTotp(secret, code) {
+  const normalized = normalizeMfaCode(code);
+  if (!secret || !normalized) return false;
+  const now = Date.now();
+  const windows = [-1, 0, 1];
+  for (const offset of windows) {
+    if (generateTotp(secret, now + offset * 30000) === normalized) return true;
+  }
+  return false;
+}
+
+const staffLockoutState = new Map();
+
+function getStaffLockoutKey(req, staffUser) {
+  const ip = getRequestIp(req) || 'unknown';
+  const scope = STAFF_LOCKOUT_SCOPE;
+  if (scope === 'ip') return `ip:${ip}`;
+  if (scope === 'user') return `user:${staffUser || 'unknown'}`;
+  return `user:${staffUser || 'unknown'}|ip:${ip}`;
+}
+
+function getStaffLockoutStatus(req, staffUser) {
+  const key = getStaffLockoutKey(req, staffUser);
+  const entry = staffLockoutState.get(key);
+  if (!entry) return { locked: false };
+  const now = Date.now();
+  if (entry.lockedUntil && entry.lockedUntil > now) {
+    return { locked: true, retryAfterMs: entry.lockedUntil - now, entry };
+  }
+  if (entry.lockedUntil && entry.lockedUntil <= now) {
+    staffLockoutState.delete(key);
+  }
+  if (entry.firstAt && now - entry.firstAt > STAFF_LOCKOUT_WINDOW_MS) {
+    staffLockoutState.delete(key);
+  }
+  return { locked: false };
+}
+
+async function recordStaffAuthFailure(req, staffUser, reason) {
+  const key = getStaffLockoutKey(req, staffUser);
+  const now = Date.now();
+  const entry = staffLockoutState.get(key) || { count: 0, firstAt: 0, lockedUntil: 0 };
+
+  if (!entry.firstAt || now - entry.firstAt > STAFF_LOCKOUT_WINDOW_MS) {
+    entry.firstAt = now;
+    entry.count = 1;
+  } else {
+    entry.count += 1;
+  }
+
+  if (entry.count >= STAFF_LOCKOUT_MAX_ATTEMPTS) {
+    entry.lockedUntil = now + STAFF_LOCKOUT_DURATION_MS;
+  }
+
+  staffLockoutState.set(key, entry);
+  await logStaffAuditEvent(req, 'staff_auth_login_failed', {
+    staffUser,
+    reason: reason || 'invalid_credentials',
+    attempts: entry.count,
+    lockedUntil: entry.lockedUntil ? new Date(entry.lockedUntil).toISOString() : ''
+  });
+  return entry;
+}
+
+function clearStaffAuthFailures(req, staffUser) {
+  const key = getStaffLockoutKey(req, staffUser);
+  staffLockoutState.delete(key);
 }
 
 function pickFirst(...vals) {
@@ -490,9 +723,32 @@ function requireStaffAuth(req, res) {
   return false;
 }
 
+async function ensureLogRetention(filePath) {
+  if (!filePath) return;
+  try {
+    const stat = await fs.stat(filePath);
+    let rotate = false;
+    if (Number.isFinite(AUDIT_LOG_MAX_BYTES) && AUDIT_LOG_MAX_BYTES > 0 && stat.size >= AUDIT_LOG_MAX_BYTES) {
+      rotate = true;
+    }
+    if (Number.isFinite(AUDIT_LOG_MAX_DAYS) && AUDIT_LOG_MAX_DAYS > 0) {
+      const maxAgeMs = AUDIT_LOG_MAX_DAYS * 24 * 60 * 60 * 1000;
+      if (Date.now() - stat.mtimeMs >= maxAgeMs) rotate = true;
+    }
+    if (!rotate) return;
+    const backup = `${filePath}.1`;
+    await fs.rm(backup, { force: true });
+    await fs.rename(filePath, backup);
+  } catch (err) {
+    if (err && err.code === 'ENOENT') return;
+    console.error('Audit log retention error:', err && err.message ? err.message : String(err));
+  }
+}
+
 async function logStaffAuditEvent(req, event, details) {
   if (!ENABLE_STAFF_AUDIT_LOG || !STAFF_AUDIT_LOG_FILE) return;
   const payload = {
+    schemaVersion: 1,
     event: pickFirst(event, 'staff_event'),
     at: new Date().toISOString(),
     actor: pickFirst(req && req.staffSession && req.staffSession.sub, extractStaffActor(req)),
@@ -502,6 +758,7 @@ async function logStaffAuditEvent(req, event, details) {
   };
   try {
     await fs.mkdir(path.dirname(STAFF_AUDIT_LOG_FILE), { recursive: true });
+    await ensureLogRetention(STAFF_AUDIT_LOG_FILE);
     await fs.appendFile(STAFF_AUDIT_LOG_FILE, `${JSON.stringify(payload)}\n`, 'utf8');
   } catch (err) {
     console.error('Staff audit log error:', err && err.message ? err.message : String(err));
@@ -521,6 +778,7 @@ async function logConsentAuditEvent(req, patient) {
   if (!ENABLE_CONSENT_AUDIT_LOG || !patient) return;
 
   const payload = {
+    schemaVersion: 1,
     event: 'portal_consent_accepted',
     at: new Date().toISOString(),
     patientId: pickFirst(patient.userId),
@@ -536,6 +794,7 @@ async function logConsentAuditEvent(req, patient) {
   if (CONSENT_LOG_FILE) {
     writeTasks.push((async () => {
       await fs.mkdir(path.dirname(CONSENT_LOG_FILE), { recursive: true });
+      await ensureLogRetention(CONSENT_LOG_FILE);
       await fs.appendFile(CONSENT_LOG_FILE, `${JSON.stringify(payload)}\n`, 'utf8');
     })());
   }
@@ -1516,25 +1775,64 @@ app.post('/api/staff/auth/login', async (req, res) => {
     req.query && req.query.password,
     req.query && req.query.staffPassword
   );
+  const mfaCode = pickFirst(
+    req.body && (req.body.mfa || req.body.otp || req.body.totp),
+    req.query && (req.query.mfa || req.query.otp || req.query.totp)
+  );
 
   if (!staffUser) {
     return res.status(400).json({ status: 'error', message: 'Staff user is required.' });
   }
 
-  let passwordValid = false;
-  const expected = STAFF_GATE_USERS.get(staffUser);
-  if (expected && password) {
-    passwordValid = timingSafeEquals(password, expected);
+  const lockout = getStaffLockoutStatus(req, staffUser);
+  if (lockout.locked) {
+    const retryAfterSec = Math.max(1, Math.ceil(lockout.retryAfterMs / 1000));
+    res.set('Retry-After', String(retryAfterSec));
+    await logStaffAuditEvent(req, 'staff_auth_login_locked', {
+      staffUser,
+      retryAfterSec
+    });
+    return res.status(429).json({
+      status: 'error',
+      message: `Too many failed attempts. Try again in ${Math.ceil(retryAfterSec / 60)} minutes.`,
+      retryAfterSec
+    });
   }
 
-  if (!passwordValid) {
-    await logStaffAuditEvent(req, 'staff_auth_login_failed', { staffUser });
+  const staffConfig = resolveStaffUserConfig(staffUser);
+  if (!staffConfig) {
+    await recordStaffAuthFailure(req, staffUser, 'unknown_user');
     return res.status(401).json({ status: 'error', message: 'Invalid staff user or password.' });
   }
 
+  if (!verifyStaffPassword(password, staffConfig)) {
+    await recordStaffAuthFailure(req, staffUser, 'invalid_password');
+    return res.status(401).json({ status: 'error', message: 'Invalid staff user or password.' });
+  }
+
+  if (staffConfig.mfaRequired) {
+    if (!staffConfig.mfaSecret) {
+      await logStaffAuditEvent(req, 'staff_auth_mfa_missing_secret', { staffUser });
+      return res.status(503).json({ status: 'error', message: 'MFA is required but not configured.' });
+    }
+    if (!normalizeMfaCode(mfaCode)) {
+      await recordStaffAuthFailure(req, staffUser, 'mfa_required');
+      return res.status(400).json({ status: 'error', message: 'MFA code required.' });
+    }
+    if (!verifyTotp(staffConfig.mfaSecret, mfaCode)) {
+      await recordStaffAuthFailure(req, staffUser, 'invalid_mfa');
+      return res.status(401).json({ status: 'error', message: 'Invalid staff user, password, or MFA code.' });
+    }
+  }
+
+  clearStaffAuthFailures(req, staffUser);
+
   const staffSessionToken = createStaffSessionToken({ actor: staffUser });
   const verified = verifyStaffSessionToken(staffSessionToken);
-  await logStaffAuditEvent(req, 'staff_auth_login_success', { staffUser });
+  await logStaffAuditEvent(req, 'staff_auth_login_success', {
+    staffUser,
+    mfaRequired: staffConfig.mfaRequired || false
+  });
   return res.json({
     status: 'success',
     staffUser,

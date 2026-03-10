@@ -57,10 +57,13 @@ Copy `.env.example` to `.env` and set:
 - `LOCAL_RESULTS_DIR` (used for `RESULT_STORAGE=local`)
 - `ALLOWED_ORIGIN`
 - `PORTAL_ACCESS_TOKEN_SECRET`
-- `STAFF_GATE_USERS_JSON` (required for hidden staff login gate, user/password map)
+- `STAFF_GATE_USERS_JSON` (required for hidden staff login gate; supports password or scrypt hash)
 - `STAFF_SESSION_TOKEN_SECRET` (staff session signing secret)
 - `STAFF_SESSION_TTL_SECONDS` (default `43200` = 12 hours)
 - `MAX_STAFF_BULK_ITEMS` (optional; max files per bulk request)
+- `STAFF_LOCKOUT_MAX_ATTEMPTS`, `STAFF_LOCKOUT_WINDOW_MS`, `STAFF_LOCKOUT_DURATION_MS`, `STAFF_LOCKOUT_SCOPE`
+- `STAFF_MFA_REQUIRED`, `STAFF_MFA_SECRETS_JSON` (optional TOTP MFA)
+- `AUDIT_LOG_MAX_BYTES`, `AUDIT_LOG_MAX_DAYS` (log retention)
 - `GOOGLE_APPLICATION_CREDENTIALS` (or `GOOGLE_SERVICE_ACCOUNT_JSON`)
 - `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REFRESH_TOKEN` (required when `DRIVE_AUTH_MODE=oauth_user`)
 
@@ -130,11 +133,19 @@ Auth header (required):
 ### Hidden staff gate login
 `POST /api/staff/auth/login`
 
-Body:
+Recommended: store hashed passwords (scrypt) in `STAFF_GATE_USERS_JSON`.
+
+Generate a scrypt hash:
+```bash
+node -e "const crypto=require('crypto');const salt=crypto.randomBytes(16);const key=crypto.scryptSync('YOUR_PASSWORD', salt, 64, {N:16384,r:8,p:1});console.log(`scrypt$16384$8$1$${salt.toString('base64')}$${key.toString('base64')}`)"
+```
+
+Body (MFA optional):
 ```json
 {
   "staffUser": "frontdesk-1",
-  "password": "your_staff_password"
+  "password": "your_staff_password",
+  "mfa": "123456"
 }
 ```
 
@@ -220,7 +231,7 @@ Login and capture session token:
 ```bash
 STAFF_SESSION=$(curl -s -X POST "http://localhost:8080/api/staff/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"staffUser":"frontdesk-1","password":"YOUR_STAFF_PASSWORD"}' \
+  -d '{"staffUser":"frontdesk-1","password":"YOUR_STAFF_PASSWORD","mfa":"123456"}' \
   | node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(0,'utf8'));process.stdout.write(d.staffSessionToken||'')")
 ```
 
@@ -274,4 +285,5 @@ The console now has a hidden gate overlay. It needs:
 - Keep CAPTCHA enabled in production.
 - Keep consent logs enabled (`CONSENT_LOG_FILE` and optional `CONSENT_LOG_TO_SHEETS=true`).
 - Rotate staff passwords in `STAFF_GATE_USERS_JSON` and `PORTAL_ACCESS_TOKEN_SECRET` periodically.
+- Prefer hashed staff passwords and enable MFA for all staff accounts.
 - Use HTTPS only in production.
