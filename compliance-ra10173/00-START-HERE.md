@@ -9,6 +9,7 @@ Use this exact order:
 3. Fill processing and lawful-basis registers in `/Users/coleen/Desktop/DRMED Website/compliance-ra10173/02-legal-basis`.
 4. Confirm website notices and consent flow using `/Users/coleen/Desktop/DRMED Website/compliance-ra10173/03-notices-consent`.
 5. Fill security checklist in `/Users/coleen/Desktop/DRMED Website/compliance-ra10173/04-security/01-security-controls-checklist.md`.
+6. Complete security SOP + policy templates in `/Users/coleen/Desktop/DRMED Website/compliance-ra10173/04-security`.
 6. Activate data-subject rights process in `/Users/coleen/Desktop/DRMED Website/compliance-ra10173/05-data-subject-rights`.
 7. Activate breach process in `/Users/coleen/Desktop/DRMED Website/compliance-ra10173/06-breach-management`.
 8. Complete vendor/data sharing register in `/Users/coleen/Desktop/DRMED Website/compliance-ra10173/07-vendors/01-data-processing-agreement-register.csv`.
