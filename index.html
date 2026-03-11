@@ -398,6 +398,8 @@
     .pkg-summary-list { list-style: none; display: flex; flex-direction: column; gap: 0.28rem; }
     .pkg-summary-list li { font-size: 0.72rem; color: rgba(255,255,255,0.75); line-height: 1.45; }
     .pkg-summary-cta { display: flex; justify-content: center; gap: 0.7rem; flex-wrap: wrap; margin-top: 2.1rem; }
+    .packages-section .btn-hero-secondary { color: var(--white); border-color: rgba(255,255,255,0.35); }
+    .packages-section .btn-hero-secondary:hover { border-color: var(--white); color: var(--white); }
 
     /* ══════════════════════════════════════════════
        DOCTORS
@@ -501,6 +503,49 @@
     .hmo-name-fallback { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-mid); text-align: center; font-weight: 600; }
 
     /* ══════════════════════════════════════════════
+       PAYMENTS
+    ══════════════════════════════════════════════ */
+    .payment-section { background: var(--bg); padding: 4.75rem 0; }
+    .payment-header { padding: 0 3rem; text-align: center; }
+    .payment-sub { font-size: 0.87rem; color: var(--text-soft); margin-top: 0.6rem; line-height: 1.65; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .payment-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; margin-top: 2.2rem; padding: 0 3rem; }
+    .payment-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem 1.5rem;
+      box-shadow: var(--shadow-sm);
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .payment-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      background: rgba(6, 174, 241, 0.12);
+      color: var(--navy);
+      border: 1px solid rgba(6, 174, 241, 0.24);
+    }
+    .payment-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .payment-desc { color: var(--text-soft); font-size: 0.8rem; line-height: 1.6; }
+    .payment-note {
+      margin-top: 1.2rem;
+      text-align: center;
+      color: var(--text-soft);
+      font-size: 0.78rem;
+    }
+
+    /* ══════════════════════════════════════════════
        CONTACT
     ══════════════════════════════════════════════ */
     .contact-section { background: var(--navy); display: grid; grid-template-columns: 1fr 1.2fr; }
@@ -584,6 +629,7 @@
       .contact-section { grid-template-columns: 1fr; }
       .contact-left, .contact-right { padding: 4rem 3rem; }
       .contact-right { border-left: none; border-top: 1px solid rgba(255,255,255,0.06); }
+      .payment-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 768px) {
       nav { padding: 0.75rem 1.25rem; }
@@ -607,6 +653,8 @@
       .trust-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; }
       .trust-item:last-child { border-bottom: none; }
       .hmo-header { padding: 0 1.5rem; }
+      .payment-header { padding: 0 1.5rem; }
+      .payment-grid { grid-template-columns: 1fr; padding: 0 1.5rem; }
     }
     @media (max-width: 480px) {
       .docs-grid { grid-template-columns: 1fr; }
@@ -734,6 +782,10 @@
       <div>
         <div class="stat-number">50<sup>%</sup></div>
         <div class="stat-label">Less vs.<br>Hospitals</div>
+      </div>
+      <div>
+        <div class="stat-number">100<sup>%</sup></div>
+        <div class="stat-label">Convenient<br>Accessible · Hassle-Free · Effortless</div>
       </div>
     </div>
   </div>
@@ -976,6 +1028,38 @@
       <div class="hmo-logo-card"><img class="logo-icare" src="assets/hmo-google/icare.png" loading="lazy" referrerpolicy="no-referrer" alt="iCare" onerror="this.style.display='none';this.nextElementSibling.style.display='block';" /><span class="hmo-name-fallback" style="display:none;">iCare</span></div>
     </div>
   </div>
+</section>
+
+<!-- PAYMENTS -->
+<section class="payment-section" id="payments">
+  <div class="payment-header fade-in">
+    <div class="eyebrow" style="justify-content:center;"><div class="eyebrow-line"></div><div class="eyebrow-text">Payment Options</div><div class="eyebrow-line"></div></div>
+    <h2 class="section-title" style="margin-bottom:0.5rem;">100% <em>Convenient</em> Payments</h2>
+    <p class="payment-sub">LESS RISK & MORE CONVENIENT: No more long waiting times inside crowded hospitals or health centers. Accessible, hassle-free, effortless payment options are available for your visit.</p>
+  </div>
+  <div class="payment-grid">
+    <div class="payment-card fade-in">
+      <div class="payment-icon">💵</div>
+      <div class="payment-title">Cash</div>
+      <div class="payment-desc">Pay over the counter at the clinic.</div>
+    </div>
+    <div class="payment-card fade-in">
+      <div class="payment-icon">📱</div>
+      <div class="payment-title">QR Payments</div>
+      <div class="payment-desc">GCash/PayMaya or other QR-supported wallets.</div>
+    </div>
+    <div class="payment-card fade-in">
+      <div class="payment-icon">🏦</div>
+      <div class="payment-title">Bank Transfer</div>
+      <div class="payment-desc">Local bank transfer or online banking.</div>
+    </div>
+    <div class="payment-card fade-in">
+      <div class="payment-icon">💳</div>
+      <div class="payment-title">Card Payments</div>
+      <div class="payment-desc">Debit and credit card accepted.</div>
+    </div>
+  </div>
+  <div class="payment-note">Need assistance? Our front desk will guide you through the payment method that works best for you.</div>
 </section>
 
 <!-- CONTACT -->
