@@ -171,6 +171,49 @@
     }
     .pill.ok { color: #0d6b37; background: #dff4e7; }
     .pill.no { color: #9b1f1f; background: #fbe3e3; }
+    .pending-tests {
+      margin-bottom: 0.68rem;
+      padding: 0.62rem 0.7rem;
+      border: 1px solid #d4e2f3;
+      border-radius: 10px;
+      background: #f8fbff;
+    }
+    .pending-tests-grid {
+      display: grid;
+      gap: 0.5rem 0.7rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 0.45rem;
+    }
+    .pending-test-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 0;
+      font-size: 0.72rem;
+      letter-spacing: 0.01em;
+      text-transform: none;
+      color: var(--ink);
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .pending-test-item input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+      accent-color: var(--navy);
+      transform: translateY(-0.02rem);
+    }
+    .pending-tests-note {
+      margin-top: 0.45rem;
+      color: var(--muted);
+      font-size: 0.69rem;
+      line-height: 1.45;
+    }
+    @media (max-width: 880px) {
+      .pending-tests-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 580px) {
+      .pending-tests-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    }
     .gate-overlay {
       position: fixed;
       inset: 0;
@@ -316,6 +359,23 @@
             <label for="uploadDate">Test Date (recommended)</label>
             <input id="uploadDate" type="date" />
           </div>
+        </div>
+        <div class="pending-tests">
+          <label>Pending Tests (No-file bulk option)</label>
+          <div class="pending-tests-grid">
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="CHEM" /> CHEMISTRY (CHEM)</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="CBC" /> COMPLETE BLOOD COUNT (CBC)</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="BT" /> BLOOD TYPE (BT)</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="SERO" /> SEROLOGY (SERO)</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="UA" /> URINALYSIS (UA)</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="PSA" /> PSA</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="CT/BT" /> CT/BT</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="OGTT" /> OGTT</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="2HR PPBS" /> 2HR PPBS</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="FA" /> FECALYSIS (FA)</label>
+            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="PT" /> PREGNANCY TEST (PT)</label>
+          </div>
+          <div class="pending-tests-note">If at least one test is checked and no PDF is selected, submit will create one Pending row per checked test.</div>
         </div>
         <div>
           <label for="uploadFiles">PDF Files (optional, single or multiple)</label>
@@ -642,6 +702,7 @@
       document.getElementById('uploadName').value = '';
       document.getElementById('uploadPin').value = '';
       document.getElementById('uploadFiles').value = '';
+      clearPendingSelections();
       const body = document.getElementById('uploadPreviewBody');
       body.innerHTML = '<tr><td colspan="7" class="muted">No files selected.</td></tr>';
       setUploadSync('waiting.', '');
@@ -655,6 +716,8 @@
       document.getElementById('uploadTest').value = text(row.testName, '');
       document.getElementById('uploadDate').value = normalizeDateToken(row.date || '');
       document.getElementById('uploadPatientId').value = text(row.patientId, '');
+      syncPendingSelectionFromTestName(row.testName);
+      updateUploadModeUi();
       setStatus('uploadStatusBox', 'Uploader form loaded from selected row.', 'good');
     }
 
@@ -669,6 +732,44 @@
       };
     }
 
+    function normalizeTestName(testName) {
+      return text(testName, '').replace(/\s+/g, ' ').toUpperCase();
+    }
+
+    function getSelectedPendingTests() {
+      return Array.from(document.querySelectorAll('.pending-test-checkbox:checked'))
+        .map(function(cb) { return normalizeTestName(cb.value); })
+        .filter(Boolean);
+    }
+
+    function getPendingTestsForNoFile(fallbackTestName) {
+      const selected = getSelectedPendingTests();
+      if (selected.length) return Array.from(new Set(selected));
+      const fallback = normalizeTestName(fallbackTestName);
+      return fallback ? [fallback] : [];
+    }
+
+    function clearPendingSelections() {
+      const checkboxes = document.querySelectorAll('.pending-test-checkbox');
+      checkboxes.forEach(function(cb) { cb.checked = false; });
+    }
+
+    function syncPendingSelectionFromTestName(testName) {
+      const normalized = normalizeTestName(testName);
+      if (!normalized) {
+        clearPendingSelections();
+        return;
+      }
+      const checkboxes = Array.from(document.querySelectorAll('.pending-test-checkbox'));
+      let matched = false;
+      checkboxes.forEach(function(cb) {
+        const isMatch = normalizeTestName(cb.value) === normalized;
+        cb.checked = isMatch;
+        if (isMatch) matched = true;
+      });
+      if (!matched) clearPendingSelections();
+    }
+
     function setUploadSync(message, tone) {
       setStatus('uploadSyncBox', 'Google Sheet sync: ' + text(message, ''), tone || '');
     }
@@ -678,8 +779,17 @@
       const btn = document.getElementById('btnUploadSubmit');
       if (!btn) return;
       if (!files.length) {
-        btn.textContent = 'Save Pending to Google Sheet';
-        setStatus('uploadModeBox', 'Mode: Pending update (no file selected).', 'info');
+        const defaults = getUploadDefaults();
+        const pendingTests = getPendingTestsForNoFile(defaults.testName);
+        const pendingCount = pendingTests.length;
+        btn.textContent = pendingCount > 1
+          ? ('Save ' + pendingCount + ' Pending Tests to Google Sheet')
+          : 'Save Pending to Google Sheet';
+        setStatus(
+          'uploadModeBox',
+          'Mode: Pending update (no file selected' + (pendingCount ? ', ' + pendingCount + ' test(s)' : '') + ').',
+          'info'
+        );
         return;
       }
       if (files.length === 1) {
@@ -717,8 +827,24 @@
       const defaults = getUploadDefaults();
       updateUploadModeUi();
       if (!files.length) {
-        renderUploadPreviewRows([]);
-        setStatus('uploadStatusBox', 'No file selected. Submit will create/update one pending row using manual fields.', 'warn');
+        const pendingTests = getPendingTestsForNoFile(defaults.testName);
+        if (!defaults.controlNumber || !pendingTests.length) {
+          renderUploadPreviewRows([]);
+          setStatus('uploadStatusBox', 'No file selected. Enter Control Number and choose at least one test.', 'warn');
+          return;
+        }
+        const previewRows = pendingTests.map(function(testName) {
+          return {
+            fileName: '(no file)',
+            controlNumber: defaults.controlNumber,
+            testName,
+            testDate: defaults.testDate || '-',
+            sheetRow: '-',
+            result: 'Pending'
+          };
+        });
+        renderUploadPreviewRows(previewRows);
+        setStatus('uploadStatusBox', 'No file selected. Ready to save ' + previewRows.length + ' pending row(s).', 'warn');
         return;
       }
       const previewRows = files.map(function(file) {
@@ -800,40 +926,74 @@
         setUploadSync('syncing...', 'warn');
 
         if (!files.length) {
-          if (!defaults.controlNumber || !defaults.testName) {
-            throw new Error('For no-file submission, Control Number and Test Name are required.');
+          const pendingTests = getPendingTestsForNoFile(defaults.testName);
+          if (!defaults.controlNumber || !pendingTests.length) {
+            throw new Error('For no-file submission, Control Number and at least one Test Name are required.');
           }
-          const payload = {
-            controlNumber: defaults.controlNumber,
-            testName: defaults.testName,
-            testDate: defaults.testDate,
-            patientId: defaults.patientId,
-            patientName: defaults.patientName,
-            securePin: defaults.securePin,
-            status: 'Pending'
-          };
+          setStatus('uploadStatusBox', 'Saving ' + pendingTests.length + ' pending row(s)...', 'warn');
+          const rows = [];
+          let successCount = 0;
+          let firstSuccess = null;
 
-          const res = await fetch(apiBase + '/api/staff/reports', {
-            method: 'POST',
-            headers: { ...headers, 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(text(data.message, 'Submit failed.'));
+          for (let i = 0; i < pendingTests.length; i += 1) {
+            const testName = pendingTests[i];
+            const payload = {
+              controlNumber: defaults.controlNumber,
+              testName,
+              testDate: defaults.testDate,
+              patientId: defaults.patientId,
+              patientName: defaults.patientName,
+              securePin: defaults.securePin,
+              status: 'Pending'
+            };
 
-          renderUploadPreviewRows([{
-            fileName: '(no file)',
-            controlNumber: text(data.controlNumber, defaults.controlNumber),
-            testName: text(data.testName, defaults.testName),
-            testDate: defaults.testDate || '-',
-            sheetRow: text(data.rowNumber, '-'),
-            result: text(data.reportStatus, 'Pending')
-          }]);
-          setStatus('uploadStatusBox', 'Saved pending row successfully (Sheet row ' + text(data.rowNumber, '?') + ').', 'good');
-          setUploadSync('synced at ' + new Date().toLocaleString(), 'good');
-          document.getElementById('lookupControl').value = text(data.controlNumber, defaults.controlNumber);
-          document.getElementById('lookupPatientId').value = defaults.patientId || text(data.patientId, '');
-          lookupControl(document.getElementById('lookupControl').value, document.getElementById('lookupPatientId').value);
+            const res = await fetch(apiBase + '/api/staff/reports', {
+              method: 'POST',
+              headers: { ...headers, 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) {
+              successCount += 1;
+              if (!firstSuccess) firstSuccess = data;
+              rows.push({
+                fileName: '(no file)',
+                controlNumber: text(data.controlNumber, defaults.controlNumber),
+                testName: text(data.testName, testName),
+                testDate: defaults.testDate || '-',
+                sheetRow: text(data.rowNumber, '-'),
+                result: text(data.reportStatus, 'Pending')
+              });
+            } else {
+              rows.push({
+                fileName: '(no file)',
+                controlNumber: defaults.controlNumber,
+                testName,
+                testDate: defaults.testDate || '-',
+                sheetRow: '-',
+                result: 'Failed: ' + text(data.message, 'Submit failed.')
+              });
+            }
+          }
+
+          const errorCount = pendingTests.length - successCount;
+          renderUploadPreviewRows(rows);
+          setStatus(
+            'uploadStatusBox',
+            'Pending save complete. Success: ' + successCount + ', Errors: ' + errorCount + '.',
+            errorCount ? 'warn' : 'good'
+          );
+          setUploadSync(
+            successCount
+              ? ('synced ' + successCount + ' pending row(s) at ' + new Date().toLocaleString())
+              : 'failed. no rows were saved.',
+            errorCount ? (successCount ? 'warn' : 'bad') : 'good'
+          );
+          if (firstSuccess) {
+            document.getElementById('lookupControl').value = text(firstSuccess.controlNumber, defaults.controlNumber);
+            document.getElementById('lookupPatientId').value = defaults.patientId || text(firstSuccess.patientId, '');
+            lookupControl(document.getElementById('lookupControl').value, document.getElementById('lookupPatientId').value);
+          }
           return;
         }
 
@@ -919,7 +1079,16 @@
       document.getElementById('btnUploadClear').addEventListener('click', clearUploadForm);
       document.getElementById('uploadFiles').addEventListener('change', previewUploadFiles);
       document.getElementById('uploadControl').addEventListener('input', function(e) { e.target.value = text(e.target.value, '').toUpperCase(); });
+      document.getElementById('uploadControl').addEventListener('input', function() { updateUploadModeUi(); });
+      document.getElementById('uploadTest').addEventListener('input', function() { updateUploadModeUi(); });
       document.getElementById('uploadPatientId').addEventListener('input', function(e) { e.target.value = text(e.target.value, '').toUpperCase(); });
+      document.querySelectorAll('.pending-test-checkbox').forEach(function(cb) {
+        cb.addEventListener('change', function() {
+          updateUploadModeUi();
+          const files = Array.from(document.getElementById('uploadFiles').files || []);
+          if (!files.length) previewUploadFiles();
+        });
+      });
       document.getElementById('lookupControl').addEventListener('input', function(e) { e.target.value = text(e.target.value, '').toUpperCase(); });
       document.getElementById('lookupPatientId').addEventListener('input', function(e) { e.target.value = text(e.target.value, '').toUpperCase(); });
       document.getElementById('btnLookup').addEventListener('click', function() {
