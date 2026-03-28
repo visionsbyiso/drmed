@@ -209,6 +209,57 @@
       font-size: 0.69rem;
       line-height: 1.45;
     }
+    .patient-search-wrap {
+      position: relative;
+    }
+    .patient-search-dropdown {
+      position: absolute;
+      top: calc(100% + 0.3rem);
+      left: 0;
+      right: 0;
+      border: 1px solid #c8d8eb;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 10px 24px rgba(19, 48, 77, 0.16);
+      max-height: 260px;
+      overflow: auto;
+      z-index: 30;
+      display: none;
+    }
+    .patient-search-dropdown.show {
+      display: block;
+    }
+    .patient-search-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      border-bottom: 1px solid #eef3fa;
+      background: #fff;
+      color: var(--ink);
+      padding: 0.52rem 0.62rem;
+      cursor: pointer;
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }
+    .patient-search-item:last-child {
+      border-bottom: 0;
+    }
+    .patient-search-item:hover,
+    .patient-search-item:focus {
+      background: #eff6ff;
+      outline: none;
+    }
+    .patient-search-item-title {
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--navy);
+    }
+    .patient-search-item-sub {
+      margin-top: 0.13rem;
+      color: var(--muted);
+      font-size: 0.7rem;
+    }
     @media (max-width: 880px) {
       .pending-tests-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
@@ -336,14 +387,17 @@
         <div class="row-3" style="margin-top:0.6rem;">
           <div style="grid-column: span 2;">
             <label for="patientSearchInput">Search (name, patient ID, birthday, contact)</label>
-            <input id="patientSearchInput" type="text" placeholder="REYES ALFREDO / DRM-1234 / 1962-09-17" />
+            <div class="patient-search-wrap" id="patientSearchWrap">
+              <input id="patientSearchInput" type="text" placeholder="Type to search: REYES / DRM-1234 / 1962-09-17" autocomplete="off" />
+              <div id="patientSearchDropdown" class="patient-search-dropdown"></div>
+            </div>
           </div>
           <div>
             <label>&nbsp;</label>
             <button id="btnPatientSearch" type="button">Search Patient Master</button>
           </div>
         </div>
-        <div id="patientSearchStatus" class="status">Type at least 2 characters, then click Search Patient Master.</div>
+        <div id="patientSearchStatus" class="status">Type at least 2 characters to see dropdown suggestions, or click Search Patient Master.</div>
         <table>
           <thead>
             <tr>
@@ -488,6 +542,10 @@
       staffUser: '',
       staffSessionToken: '',
       staffSessionExpiry: ''
+    };
+    const patientSearchState = {
+      debounceTimer: null,
+      requestSeq: 0
     };
 
     function defaultApiBase() {
@@ -904,6 +962,45 @@
       const generatedTag = row.generatedPatientId ? ' (generated ID)' : '';
       setStatus('patientSearchStatus', 'Selected ' + text(row.patientName, 'patient') + ' [' + patientId + ']' + generatedTag + '.', 'good');
       setStatus('uploadStatusBox', 'Uploader filled from Patient Search.', 'good');
+      hidePatientSearchDropdown();
+    }
+
+    function hidePatientSearchDropdown() {
+      const dropdown = document.getElementById('patientSearchDropdown');
+      if (!dropdown) return;
+      dropdown.classList.remove('show');
+      dropdown.innerHTML = '';
+    }
+
+    function renderPatientSearchDropdown(rows) {
+      const dropdown = document.getElementById('patientSearchDropdown');
+      if (!dropdown) return;
+      dropdown.innerHTML = '';
+      if (!rows.length) {
+        const empty = document.createElement('div');
+        empty.className = 'patient-search-item-sub';
+        empty.style.padding = '0.55rem 0.62rem';
+        empty.textContent = 'No matching patients.';
+        dropdown.appendChild(empty);
+        dropdown.classList.add('show');
+        return;
+      }
+      rows.forEach(function(row) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'patient-search-item';
+        const title = document.createElement('div');
+        title.className = 'patient-search-item-title';
+        title.textContent = text(row.patientName, '-') + ' [' + text(row.patientId, '-') + ']';
+        const sub = document.createElement('div');
+        sub.className = 'patient-search-item-sub';
+        sub.textContent = 'Bday: ' + text(row.birthday, '-') + ' | Contact: ' + text(row.contactNumber, '-');
+        btn.appendChild(title);
+        btn.appendChild(sub);
+        btn.addEventListener('click', function() { selectPatientFromSearch(row); });
+        dropdown.appendChild(btn);
+      });
+      dropdown.classList.add('show');
     }
 
     function renderPatientSearchRows(rows) {
@@ -931,23 +1028,61 @@
       });
     }
 
+    async function fetchPatientSearch(query, limit) {
+      const { apiBase, headers } = buildAuthContext();
+      const url = apiBase + '/api/staff/patients/search?q=' + encodeURIComponent(query) + '&limit=' + String(limit || 30);
+      const res = await fetch(url, { method: 'GET', headers });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(text(data.message, 'Patient search failed.'));
+      return {
+        rows: Array.isArray(data.patients) ? data.patients : [],
+        sheetName: text(data.sheetName, 'master sheet')
+      };
+    }
+
+    function queueLivePatientSearch() {
+      if (patientSearchState.debounceTimer) {
+        clearTimeout(patientSearchState.debounceTimer);
+      }
+      patientSearchState.debounceTimer = setTimeout(runLivePatientSearch, 250);
+    }
+
+    async function runLivePatientSearch() {
+      const query = text(document.getElementById('patientSearchInput').value, '');
+      if (query.length < 2) {
+        hidePatientSearchDropdown();
+        setStatus('patientSearchStatus', 'Type at least 2 characters to search patient master.', 'warn');
+        return;
+      }
+      const reqId = patientSearchState.requestSeq + 1;
+      patientSearchState.requestSeq = reqId;
+      try {
+        const data = await fetchPatientSearch(query, 12);
+        if (reqId !== patientSearchState.requestSeq) return;
+        renderPatientSearchDropdown(data.rows);
+        setStatus('patientSearchStatus', 'Live results: ' + data.rows.length + ' patient(s) from ' + data.sheetName + '.', data.rows.length ? 'good' : 'warn');
+      } catch (err) {
+        if (reqId !== patientSearchState.requestSeq) return;
+        hidePatientSearchDropdown();
+        setStatus('patientSearchStatus', text(err.message, 'Patient search failed.'), 'bad');
+      }
+    }
+
     async function searchPatientMaster() {
       const query = text(document.getElementById('patientSearchInput').value, '');
       if (query.length < 2) {
         setStatus('patientSearchStatus', 'Search query must be at least 2 characters.', 'warn');
+        hidePatientSearchDropdown();
         renderPatientSearchRows([]);
         return;
       }
       try {
-        const { apiBase, headers } = buildAuthContext();
-        const url = apiBase + '/api/staff/patients/search?q=' + encodeURIComponent(query) + '&limit=30';
-        const res = await fetch(url, { method: 'GET', headers });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(text(data.message, 'Patient search failed.'));
-        const rows = Array.isArray(data.patients) ? data.patients : [];
-        renderPatientSearchRows(rows);
-        setStatus('patientSearchStatus', 'Found ' + rows.length + ' patient(s) from ' + text(data.sheetName, 'master sheet') + '.', rows.length ? 'good' : 'warn');
+        const data = await fetchPatientSearch(query, 30);
+        renderPatientSearchRows(data.rows);
+        renderPatientSearchDropdown(data.rows.slice(0, 12));
+        setStatus('patientSearchStatus', 'Found ' + data.rows.length + ' patient(s) from ' + data.sheetName + '.', data.rows.length ? 'good' : 'warn');
       } catch (err) {
+        hidePatientSearchDropdown();
         renderPatientSearchRows([]);
         setStatus('patientSearchStatus', text(err.message, 'Patient search failed.'), 'bad');
       }
@@ -1166,11 +1301,25 @@
       document.getElementById('btnLockSession').addEventListener('click', lockConsole);
       document.getElementById('btnHealthCheck').addEventListener('click', function() { doHealthCheck('sessionStatus'); });
       document.getElementById('btnPatientSearch').addEventListener('click', searchPatientMaster);
+      document.getElementById('patientSearchInput').addEventListener('input', function() {
+        queueLivePatientSearch();
+      });
+      document.getElementById('patientSearchInput').addEventListener('focus', function() {
+        const q = text(document.getElementById('patientSearchInput').value, '');
+        if (q.length >= 2) queueLivePatientSearch();
+      });
       document.getElementById('patientSearchInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
           e.preventDefault();
           searchPatientMaster();
+        } else if (e.key === 'Escape') {
+          hidePatientSearchDropdown();
         }
+      });
+      document.addEventListener('click', function(e) {
+        const wrap = document.getElementById('patientSearchWrap');
+        if (!wrap) return;
+        if (!wrap.contains(e.target)) hidePatientSearchDropdown();
       });
       document.getElementById('btnUploadPreview').addEventListener('click', previewUploadFiles);
       document.getElementById('btnUploadSubmit').addEventListener('click', submitUnifiedUpload);
