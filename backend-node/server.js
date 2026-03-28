@@ -25,6 +25,8 @@ const PORT = Number.isFinite(parsedPort) && parsedPort > 0 ? Math.floor(parsedPo
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://drmed.ph,https://www.drmed.ph,https://drmed.visionsbyiso.com,https://www.drmed.visionsbyiso.com';
 const SHEET_ID = process.env.SHEET_ID || '1O09S6_hRv-c7irI_HJtbYraWSXQs08IET0-bqQIWQh4';
 const SHEET_NAME = process.env.SHEET_NAME || 'Sheet1';
+const PATIENT_MASTER_SHEET_ID = process.env.PATIENT_MASTER_SHEET_ID || SHEET_ID;
+const PATIENT_MASTER_SHEET_NAME = process.env.PATIENT_MASTER_SHEET_NAME || 'PATIENT MASTER REVIEWED';
 const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '';
 const RESULT_STORAGE = String(process.env.RESULT_STORAGE || 'drive').trim().toLowerCase();
 const USE_LOCAL_STORAGE = RESULT_STORAGE === 'local' || RESULT_STORAGE === 'filesystem';
@@ -50,6 +52,7 @@ const STAFF_MFA_SECRETS = parseMfaSecrets(process.env.STAFF_MFA_SECRETS_JSON || 
 const STAFF_SESSION_TTL_SECONDS = Number(process.env.STAFF_SESSION_TTL_SECONDS || 12 * 60 * 60);
 const MAX_STAFF_PDF_BYTES = Number(process.env.MAX_STAFF_PDF_BYTES || 12 * 1024 * 1024);
 const MAX_STAFF_BULK_ITEMS = Number(process.env.MAX_STAFF_BULK_ITEMS || 25);
+const MAX_PATIENT_SEARCH_RESULTS = Number(process.env.MAX_PATIENT_SEARCH_RESULTS || 25);
 const STAFF_AUDIT_LOG_FILE = process.env.STAFF_AUDIT_LOG_FILE || path.join(__dirname, 'logs', 'staff-audit.ndjson');
 const ENABLE_STAFF_AUDIT_LOG = String(process.env.ENABLE_STAFF_AUDIT_LOG || 'true').toLowerCase() !== 'false';
 const AUDIT_LOG_MAX_BYTES = Number(process.env.AUDIT_LOG_MAX_BYTES || 5 * 1024 * 1024);
@@ -74,6 +77,10 @@ const SAFE_STAFF_SESSION_TTL_SECONDS =
   Number.isFinite(STAFF_SESSION_TTL_SECONDS) && STAFF_SESSION_TTL_SECONDS > 0
     ? Math.floor(STAFF_SESSION_TTL_SECONDS)
     : 12 * 60 * 60;
+const SAFE_MAX_PATIENT_SEARCH_RESULTS =
+  Number.isFinite(MAX_PATIENT_SEARCH_RESULTS) && MAX_PATIENT_SEARCH_RESULTS > 0
+    ? Math.max(1, Math.min(100, Math.floor(MAX_PATIENT_SEARCH_RESULTS)))
+    : 25;
 const staffRuntimeTokenSecret = STAFF_SESSION_TOKEN_SECRET || portalRuntimeTokenSecret;
 const ALLOWED_ORIGINS = String(ALLOWED_ORIGIN || '')
   .split(',')
@@ -278,6 +285,36 @@ const SHEET_COL = Object.freeze({
   STATUS: 6,
   RELEASED_AT: 7,
   DRIVE_FILE_ID: 8
+});
+
+const PATIENT_MASTER_FALLBACK_COL = Object.freeze({
+  PATIENT_ID: -1,
+  PATIENT_NAME: 0,
+  LAST_NAME: 1,
+  FIRST_NAME: 2,
+  MIDDLE_NAME: 3,
+  GENDER: 4,
+  BIRTHDAY: 5,
+  CONTACT: 6,
+  EMAIL: 7,
+  ADDRESS: 8,
+  DOCTOR: 10,
+  SECURE_PIN: -1
+});
+
+const PATIENT_MASTER_HEADER_ALIASES = Object.freeze({
+  PATIENT_ID: ['patientid', 'patientuserid', 'userid', 'accountid', 'id'],
+  PATIENT_NAME: ['patientname', 'customername', 'fullname', 'name'],
+  LAST_NAME: ['lastname', 'surname', 'familyname', 'last'],
+  FIRST_NAME: ['firstname', 'givenname', 'first'],
+  MIDDLE_NAME: ['middlename', 'middleinitial', 'middle'],
+  GENDER: ['gender', 'sex'],
+  BIRTHDAY: ['birthday', 'birthdate', 'dateofbirth', 'dob'],
+  CONTACT: ['contact', 'contactnumber', 'mobile', 'phone', 'contactno'],
+  EMAIL: ['email', 'emailaddress'],
+  ADDRESS: ['address', 'fulladdress', 'addressfull'],
+  DOCTOR: ['doctor', 'physician'],
+  SECURE_PIN: ['securepin', 'pin']
 });
 
 function parseStaffGateUsers(raw) {
@@ -913,6 +950,71 @@ function normalizeHumanName(value) {
   return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
+function normalizeHeaderToken(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+function normalizeSearchText(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9@.\-+/ ]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function findHeaderIndex(headers, aliases) {
+  const wanted = new Set((aliases || []).map((a) => normalizeHeaderToken(a)).filter(Boolean));
+  if (!wanted.size) return -1;
+  for (let i = 0; i < headers.length; i += 1) {
+    const token = normalizeHeaderToken(headers[i]);
+    if (wanted.has(token)) return i;
+  }
+  return -1;
+}
+
+function resolvePatientMasterColMap(headers) {
+  const out = {};
+  let recognized = 0;
+  for (const key of Object.keys(PATIENT_MASTER_HEADER_ALIASES)) {
+    const idx = findHeaderIndex(headers, PATIENT_MASTER_HEADER_ALIASES[key]);
+    out[key] = idx;
+    if (idx >= 0) recognized += 1;
+  }
+  const hasHeader = recognized >= 2;
+  if (!hasHeader) {
+    for (const key of Object.keys(PATIENT_MASTER_FALLBACK_COL)) {
+      out[key] = PATIENT_MASTER_FALLBACK_COL[key];
+    }
+  }
+  return { hasHeader, col: out };
+}
+
+function readCellValue(row, idx) {
+  if (!Array.isArray(row)) return '';
+  if (!Number.isFinite(idx) || idx < 0) return '';
+  return String(row[idx] || '').trim();
+}
+
+function buildDerivedPatientId(entry, rowNumber) {
+  const seed = [
+    normalizeToken(entry.lastName),
+    normalizeToken(entry.firstName),
+    normalizeToken(entry.middleName),
+    normalizeDateKey(entry.birthday),
+    normalizeToken(entry.contactNumber),
+    normalizeToken(entry.email),
+    normalizeToken(entry.patientName)
+  ]
+    .filter(Boolean)
+    .join('|');
+  const raw = seed || `row:${rowNumber}`;
+  const digest = crypto.createHash('sha1').update(raw).digest('hex').slice(0, 8).toUpperCase();
+  return `DRM-${digest}`;
+}
+
 function fileNameMatchesControl(fileName, controlNumber) {
   const name = String(fileName || '').trim().toLowerCase();
   const control = String(controlNumber || '').trim().toLowerCase();
@@ -1109,6 +1211,126 @@ async function getSheetRows(sheets) {
     majorDimension: 'ROWS'
   });
   return result.data.values || [];
+}
+
+async function getPatientMasterValues(sheets) {
+  const range = `${PATIENT_MASTER_SHEET_NAME}!A1:Z`;
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: PATIENT_MASTER_SHEET_ID,
+    range,
+    majorDimension: 'ROWS'
+  });
+  return result.data.values || [];
+}
+
+function toPatientMasterEntry(row, rowNumber, col) {
+  const patientName = pickFirst(
+    readCellValue(row, col.PATIENT_NAME),
+    [readCellValue(row, col.LAST_NAME), readCellValue(row, col.FIRST_NAME), readCellValue(row, col.MIDDLE_NAME)]
+      .filter(Boolean)
+      .join(', ')
+  );
+  const entry = {
+    patientId: normalizePatientId(readCellValue(row, col.PATIENT_ID)),
+    patientName,
+    lastName: readCellValue(row, col.LAST_NAME),
+    firstName: readCellValue(row, col.FIRST_NAME),
+    middleName: readCellValue(row, col.MIDDLE_NAME),
+    gender: readCellValue(row, col.GENDER),
+    birthday: readCellValue(row, col.BIRTHDAY),
+    contactNumber: readCellValue(row, col.CONTACT),
+    email: readCellValue(row, col.EMAIL),
+    address: readCellValue(row, col.ADDRESS),
+    doctor: readCellValue(row, col.DOCTOR),
+    securePin: readCellValue(row, col.SECURE_PIN),
+    sourceRow: rowNumber,
+    generatedPatientId: false
+  };
+  if (!entry.patientId) {
+    entry.patientId = buildDerivedPatientId(entry, rowNumber);
+    entry.generatedPatientId = true;
+  }
+  entry.searchText = normalizeSearchText(
+    [
+      entry.patientId,
+      entry.patientName,
+      entry.lastName,
+      entry.firstName,
+      entry.middleName,
+      entry.gender,
+      entry.birthday,
+      entry.contactNumber,
+      entry.email,
+      entry.address,
+      entry.doctor
+    ].join(' ')
+  );
+  return entry;
+}
+
+function scorePatientSearchEntry(entry, query, tokens) {
+  let score = 0;
+  const qText = normalizeSearchText(query);
+  const qId = normalizePatientId(query);
+  const entryName = normalizeSearchText(
+    pickFirst(
+      entry.patientName,
+      [entry.lastName, entry.firstName, entry.middleName].filter(Boolean).join(' ')
+    )
+  );
+  if (qId && entry.patientId === qId) score += 500;
+  if (entryName && entryName === qText) score += 220;
+  if (entryName && qText && entryName.startsWith(qText)) score += 130;
+  if (tokens.length) score += tokens.length * 25;
+  if (!entry.generatedPatientId) score += 10;
+  score += Math.max(0, 5 - Math.floor((entry.sourceRow || 0) / 1000));
+  return score;
+}
+
+async function searchPatientMaster({ sheets, query, limit }) {
+  const allValues = await getPatientMasterValues(sheets);
+  if (!allValues.length) return [];
+
+  const rawHeaders = allValues[0] || [];
+  const { hasHeader, col } = resolvePatientMasterColMap(rawHeaders);
+  const dataRows = hasHeader ? allValues.slice(1) : allValues;
+  const firstDataRow = hasHeader ? 2 : 1;
+
+  const entries = dataRows
+    .map((row, idx) => toPatientMasterEntry(row, firstDataRow + idx, col))
+    .filter((entry) => !!pickFirst(entry.patientName, entry.lastName, entry.firstName));
+
+  const qText = normalizeSearchText(query);
+  const tokens = qText.split(' ').filter(Boolean);
+  const matches = entries.filter((entry) => {
+    if (!tokens.length) return true;
+    return tokens.every((token) => entry.searchText.includes(token));
+  });
+
+  matches.sort((a, b) => {
+    const scoreDiff = scorePatientSearchEntry(b, query, tokens) - scorePatientSearchEntry(a, query, tokens);
+    if (scoreDiff !== 0) return scoreDiff;
+    const nameA = normalizeSearchText(pickFirst(a.patientName, `${a.lastName}, ${a.firstName}`));
+    const nameB = normalizeSearchText(pickFirst(b.patientName, `${b.lastName}, ${b.firstName}`));
+    return nameA.localeCompare(nameB);
+  });
+
+  return matches.slice(0, limit).map((entry) => ({
+    patientId: entry.patientId,
+    patientName: entry.patientName,
+    lastName: entry.lastName,
+    firstName: entry.firstName,
+    middleName: entry.middleName,
+    gender: entry.gender,
+    birthday: entry.birthday,
+    contactNumber: entry.contactNumber,
+    email: entry.email,
+    address: entry.address,
+    doctor: entry.doctor,
+    securePin: entry.securePin,
+    sourceRow: entry.sourceRow,
+    generatedPatientId: !!entry.generatedPatientId
+  }));
 }
 
 async function findPatientEntries({ sheets, patientId, controlNumber, securePin }) {
@@ -1713,7 +1935,6 @@ async function processStaffReportSubmission({ sheets, drive, input, rowsCache })
 }
 
 const app = express();
-app.set('trust proxy', 1);
 app.disable('x-powered-by');
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(express.json({ limit: JSON_BODY_LIMIT }));
@@ -1851,6 +2072,40 @@ app.post('/api/staff/auth/login', async (req, res) => {
  * Auth:
  * - Header X-Staff-Session from /api/staff/auth/login
  */
+app.get('/api/staff/patients/search', async (req, res) => {
+  if (!requireStaffAuth(req, res)) return;
+  const query = pickFirst(
+    req.query && req.query.q,
+    req.query && req.query.query,
+    req.query && req.query.search,
+    req.query && req.query.name,
+    req.query && req.query.patient
+  );
+  if (String(query || '').trim().length < 2) {
+    return res.status(400).json({ status: 'error', message: 'Search query must be at least 2 characters.' });
+  }
+  const limitRaw = Number(req.query && req.query.limit);
+  const limit =
+    Number.isFinite(limitRaw) && limitRaw > 0
+      ? Math.max(1, Math.min(100, Math.floor(limitRaw)))
+      : SAFE_MAX_PATIENT_SEARCH_RESULTS;
+
+  try {
+    const { sheets } = await getGoogleClients();
+    const patients = await searchPatientMaster({ sheets, query, limit });
+    return res.json({
+      status: 'success',
+      query: String(query).trim(),
+      count: patients.length,
+      sheetName: PATIENT_MASTER_SHEET_NAME,
+      patients
+    });
+  } catch (err) {
+    console.error('Staff patient search error:', err.message);
+    return res.status(500).json({ status: 'error', message: 'Unable to search patient master.' });
+  }
+});
+
 app.get('/api/staff/reports', async (req, res) => {
   if (!requireStaffAuth(req, res)) return;
   const patientId = pickFirst(req.query && req.query.patientId, req.query && req.query.userId, req.query && req.query.accountId);
