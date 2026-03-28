@@ -73,6 +73,7 @@
       line-height: 1.5;
     }
     .settings { grid-column: span 12; }
+    .patient-search { grid-column: span 12; }
     .uploader { grid-column: span 12; }
     .lookup { grid-column: span 12; }
     .row {
@@ -329,34 +330,65 @@
         <div id="sessionStatus" class="status">Console locked.</div>
       </article>
 
+      <article class="card patient-search">
+        <h2>Patient Search (Master Sheet)</h2>
+        <div class="muted">Search patient master, then click Select to auto-fill Patient User ID and Patient Name in uploader.</div>
+        <div class="row-3" style="margin-top:0.6rem;">
+          <div style="grid-column: span 2;">
+            <label for="patientSearchInput">Search (name, patient ID, birthday, contact)</label>
+            <input id="patientSearchInput" type="text" placeholder="REYES ALFREDO / DRM-1234 / 1962-09-17" />
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button id="btnPatientSearch" type="button">Search Patient Master</button>
+          </div>
+        </div>
+        <div id="patientSearchStatus" class="status">Type at least 2 characters, then click Search Patient Master.</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Name</th>
+              <th>Birthday</th>
+              <th>Contact</th>
+              <th>Address</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="patientSearchBody">
+            <tr><td colspan="6" class="muted">No search yet.</td></tr>
+          </tbody>
+        </table>
+      </article>
+
       <article class="card uploader">
         <h2>Unified Uploader (Single + Bulk)</h2>
         <div class="muted">Use one form for everything. If you upload files, system releases them. If you upload no file, system saves as pending.</div>
         <div class="row-3" style="margin-top:0.6rem;">
           <div>
-            <label for="uploadPatientId">Patient User ID</label>
+            <label for="uploadPatientId">Patient User ID (recommended)</label>
             <input id="uploadPatientId" type="text" placeholder="DRM-0001" />
           </div>
           <div>
-            <label for="uploadName">Patient Name</label>
-            <input id="uploadName" type="text" placeholder="FULL NAME" />
+            <label for="uploadName">Patient Name (optional)</label>
+            <input id="uploadName" type="text" placeholder="Verlyn Devosora" />
           </div>
           <div>
             <label for="uploadPin">Secure PIN (required for new patient/control)</label>
-            <input id="uploadPin" type="text" placeholder="123456" />
+            <input id="uploadPin" type="text" placeholder="A1B2C3" />
           </div>
         </div>
         <div class="row-3">
           <div>
-            <label for="uploadControl">Control Number</label>
-            <input id="uploadControl" type="text" placeholder="1234" />
+            <label for="uploadControl">Control Number (for no-file single or filename fallback)</label>
+            <input id="uploadControl" type="text" placeholder="2026-0001" />
           </div>
           <div>
-            <label for="uploadTest">Test Name</label>
-            <input id="uploadTest" type="text" placeholder="TEST" />
+            <label for="uploadTest">Test Name (for no-file single or filename fallback)</label>
+            <input id="uploadTest" type="text" placeholder="CBC" />
           </div>
           <div>
-            <label for="uploadDate">Test Date (REQUIRED)</label>
+            <label for="uploadDate">Test Date (recommended)</label>
             <input id="uploadDate" type="date" />
           </div>
         </div>
@@ -374,12 +406,6 @@
             <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="2HR PPBS" /> 2HR PPBS</label>
             <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="FA" /> FECALYSIS (FA)</label>
             <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="PT" /> PREGNANCY TEST (PT)</label>
-            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="CHESTPA" /> CHEST PA (CHESTPA)</label>
-            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="ECG" /> ECG</label>
-            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="ELEC" /> ELECTROLYTES (ELEC)</label>
-            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="THYROID" /> THYROID</label>
-            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="MICRO" /> MICROBIOLOGY (MICRO)</label>
-            <label class="pending-test-item"><input class="pending-test-checkbox" type="checkbox" value="OTHER" /> OTHER</label>
           </div>
           <div class="pending-tests-note">If at least one test is checked and no PDF is selected, submit will create one Pending row per checked test.</div>
         </div>
@@ -868,6 +894,65 @@
       setStatus('uploadStatusBox', files.length + ' file(s) ready.', 'warn');
     }
 
+    function selectPatientFromSearch(row) {
+      if (!row) return;
+      const patientId = text(row.patientId, '').toUpperCase();
+      if (patientId) document.getElementById('uploadPatientId').value = patientId;
+      if (text(row.patientName, '')) document.getElementById('uploadName').value = text(row.patientName, '');
+      document.getElementById('lookupPatientId').value = patientId;
+      updateUploadModeUi();
+      const generatedTag = row.generatedPatientId ? ' (generated ID)' : '';
+      setStatus('patientSearchStatus', 'Selected ' + text(row.patientName, 'patient') + ' [' + patientId + ']' + generatedTag + '.', 'good');
+      setStatus('uploadStatusBox', 'Uploader filled from Patient Search.', 'good');
+    }
+
+    function renderPatientSearchRows(rows) {
+      const body = document.getElementById('patientSearchBody');
+      body.innerHTML = '';
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="6" class="muted">No matching patients found.</td></tr>';
+        return;
+      }
+      rows.forEach(function(row, idx) {
+        const tr = document.createElement('tr');
+        const btnId = 'select-patient-' + String(idx) + '-' + String(Math.random()).slice(2, 8);
+        tr.innerHTML =
+          '<td>' + text(row.patientId, '-') + '</td>' +
+          '<td>' + text(row.patientName, '-') + '</td>' +
+          '<td>' + text(row.birthday, '-') + '</td>' +
+          '<td>' + text(row.contactNumber, '-') + '</td>' +
+          '<td>' + text(row.address, '-') + '</td>' +
+          '<td><button class="ghost" id="' + btnId + '" type="button" style="width:auto;padding:0.35rem 0.55rem;font-size:0.68rem;">Select</button></td>';
+        body.appendChild(tr);
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          btn.addEventListener('click', function() { selectPatientFromSearch(row); });
+        }
+      });
+    }
+
+    async function searchPatientMaster() {
+      const query = text(document.getElementById('patientSearchInput').value, '');
+      if (query.length < 2) {
+        setStatus('patientSearchStatus', 'Search query must be at least 2 characters.', 'warn');
+        renderPatientSearchRows([]);
+        return;
+      }
+      try {
+        const { apiBase, headers } = buildAuthContext();
+        const url = apiBase + '/api/staff/patients/search?q=' + encodeURIComponent(query) + '&limit=30';
+        const res = await fetch(url, { method: 'GET', headers });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(text(data.message, 'Patient search failed.'));
+        const rows = Array.isArray(data.patients) ? data.patients : [];
+        renderPatientSearchRows(rows);
+        setStatus('patientSearchStatus', 'Found ' + rows.length + ' patient(s) from ' + text(data.sheetName, 'master sheet') + '.', rows.length ? 'good' : 'warn');
+      } catch (err) {
+        renderPatientSearchRows([]);
+        setStatus('patientSearchStatus', text(err.message, 'Patient search failed.'), 'bad');
+      }
+    }
+
     async function lookupControl(controlNumber, patientIdInput) {
       const control = text(controlNumber, '').toUpperCase();
       const patientId = text(patientIdInput, '').toUpperCase();
@@ -1080,6 +1165,13 @@
       });
       document.getElementById('btnLockSession').addEventListener('click', lockConsole);
       document.getElementById('btnHealthCheck').addEventListener('click', function() { doHealthCheck('sessionStatus'); });
+      document.getElementById('btnPatientSearch').addEventListener('click', searchPatientMaster);
+      document.getElementById('patientSearchInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchPatientMaster();
+        }
+      });
       document.getElementById('btnUploadPreview').addEventListener('click', previewUploadFiles);
       document.getElementById('btnUploadSubmit').addEventListener('click', submitUnifiedUpload);
       document.getElementById('btnUploadClear').addEventListener('click', clearUploadForm);
