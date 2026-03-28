@@ -1033,6 +1033,9 @@
       const url = apiBase + '/api/staff/patients/search?q=' + encodeURIComponent(query) + '&limit=' + String(limit || 30);
       const res = await fetch(url, { method: 'GET', headers });
       const data = await res.json().catch(() => ({}));
+      if (res.status === 404) {
+        throw new Error('Patient search API is not available yet. Please restart or redeploy backend.');
+      }
       if (!res.ok) throw new Error(text(data.message, 'Patient search failed.'));
       return {
         rows: Array.isArray(data.patients) ? data.patients : [],
